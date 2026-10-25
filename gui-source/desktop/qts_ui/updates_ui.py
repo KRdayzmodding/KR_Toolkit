@@ -26,7 +26,7 @@ import sys
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 
-from PySide6.QtCore import QThread, Qt, Signal
+from PySide6.QtCore import QThread, QTimer, Qt, Signal
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout
 from qfluentwidgets import (BodyLabel, CaptionLabel, FluentIcon, IconWidget, ListWidget, MessageBoxBase,
                             PrimaryPushButton, ProgressBar, PushButton, SubtitleLabel, TextBrowser)
@@ -204,7 +204,11 @@ class UpdateDialog(ThemedDialog):
         # порядок как у диалогов библиотеки: главная кнопка слева, отказ справа (п. 20)
         self.go = PrimaryPushButton(TEXT["update"], self)
         self.later = PushButton(TEXT["later"], self)
-        self.go.clicked.connect(self.start)
+        # один обработчик на оба шага: «Обновить», после установки — «Перезапустить». Перецеплять
+        # сигнал голым disconnect() нельзя — он снимает и связи библиотеки, и закрытие окна после
+        # установки падало в shiboken (0xc0000005, юзер 25.10.2026: «выключается и не перезапускается»)
+        self.installed = False
+        self.go.clicked.connect(lambda: self._restart() if self.installed else self.start())
         self.later.clicked.connect(self._later)
         foot.addWidget(self.go)
         foot.addWidget(self.later)
@@ -233,7 +237,9 @@ class UpdateDialog(ThemedDialog):
         self.progress.setValue(0)
         self.progress.show()
         self.total = {t["name"]: max(1, t.get("download", 0)) for t in self.tools}
-        self.done: Dict[str, int] = {}
+        # не self.done: done() — метод QDialog, через него идут accept() и reject(); словарь на его
+        # месте ронял закрытие окна после установки в shiboken (0xc0000005, юзер 25.10.2026)
+        self.downloaded: Dict[str, int] = {}
         self.call = UpdateCall(["install"] + [t["name"] for t in self.tools], self)
         self.call.event.connect(self._event)
         self.call.finished_events.connect(self._finished)
@@ -243,8 +249,8 @@ class UpdateDialog(ThemedDialog):
         kind = ev.get("event")
         if kind == "progress":
             self.total[ev["tool"]] = max(1, int(ev["total"]))
-            self.done[ev["tool"]] = int(ev["done"])
-            done, total = sum(self.done.values()), sum(self.total.values())
+            self.downloaded[ev["tool"]] = int(ev["done"])
+            done, total = sum(self.downloaded.values()), sum(self.total.values())
             self.progress.setValue(int(1000 * done / max(1, total)))
             self.status.setText(TEXT["downloading"] % (ev["tool"], ev["version"], size_text(done), size_text(total)))
         elif kind == "installed":
@@ -253,7 +259,10 @@ class UpdateDialog(ThemedDialog):
                     self.list.item(row).setText(self._row(t, "✓"))
 
     def _finished(self, events: List[dict], code: int) -> None:
-        self.call = None
+        # поток шлёт итог последней строкой run() и ещё не вышел: дождаться, прежде чем отпускать
+        call, self.call = self.call, None
+        if call is not None:
+            call.wait()
         self.progress.hide()
         problem = next((e.get("text") for e in events if e.get("event") == "problem"), "")
         if code != 0:
@@ -274,8 +283,7 @@ class UpdateDialog(ThemedDialog):
         self.status.setTextColor(tokens.color("warning"), tokens.color("warning"))
         self.go.setText(TEXT["restart"] % mine["name"])
         self.go.setEnabled(True)
-        self.go.clicked.disconnect()
-        self.go.clicked.connect(self._restart)
+        self.installed = True
 
     def _restart(self) -> None:
         self.restart_wanted = True
@@ -359,9 +367,13 @@ def watch(window, tool: str) -> Optional[UpdateCall]:
     call = UpdateCall(["check"], window)
 
     def done(events: List[dict], _code: int) -> None:
+        call.wait()
         report = report_from(events)
         if report is not None:
-            offer(report, tool, window)
+            # окно — из очереди событий, а не изнутри сигнала потока: модальный цикл внутри
+            # сигнала, а потом перезапуск (закрытие окна-родителя потока) роняли тулзу в shiboken
+            # (0xc0000005, юзер 25.10.2026: «выключается и не перезапускается»)
+            QTimer.singleShot(0, lambda: offer(report, tool, window))
     call.finished_events.connect(done)
     call.start()
     window._update_watch = call             # держим поток живым, пока он идёт

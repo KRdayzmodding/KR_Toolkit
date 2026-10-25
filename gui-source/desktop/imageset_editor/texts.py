@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Все строки [KR] Imageset Editor — в одном месте (свод правил интерфейсов, п. 60)."""
+"""Все строки Imageset Editor — в одном месте (свод правил интерфейсов, п. 60)."""
 from __future__ import annotations
 
 from version import NAME as _NAME, VERSION as _VERSION
@@ -99,6 +99,30 @@ TEXT = {
 
     "dialog.ok": "Готово",
     "dialog.cancel": "Отмена",
+
+    "settings": "Настройки",
+    "settings.title": "Настройки Imageset Editor",
+    "settings.on": "Вкл",
+    "settings.off": "Выкл",
+    "settings.autosave": "Сохранять файлы автоматически",
+    "settings.autosave.desc": "При переключении вкладки, уходе из окна и закрытии. Выключено — "
+                              "сохранять кнопкой или Ctrl+S; при закрытии с несохранёнными "
+                              "правками тулза спросит",
+    "settings.history": "Шагов отмены на файл",
+    "settings.history.desc": "Столько последних правок каждого файла можно отменить (Ctrl+Z) — "
+                             "и после перезапуска тулзы. По умолчанию {default}, не больше {max}",
+    "settings.close": "Готово",
+
+    "save": "Сохранить все (Ctrl+S)",
+    "history.restored": "отмена доступна: шагов из прошлых сессий — {count}",
+    "history.dropped": "история правок сброшена: файл изменён вне редактора",
+
+    "unsaved.title.one": "Сохранить изменения в {name}?",
+    "unsaved.title.many": "Сохранить изменения в файлах: {count}?",
+    "unsaved.note": "Несохранённые правки не пропадут: при следующем открытии файла их можно "
+                    "вернуть — Ctrl+Y",
+    "unsaved.save": "Сохранить",
+    "unsaved.discard": "Не сохранять",
 }
 
 

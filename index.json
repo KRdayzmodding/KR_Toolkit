@@ -23,6 +23,19 @@
      ],
      "manifest": "manifests/DevToolkit/0.1.1.json",
      "sha256": "ffa5532b7caa7c55695f4e7ed2541c8e62f9124830983e3690aca0b771f1edcf"
+    },
+    {
+     "version": "0.1.2",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "После обновления кнопка «Перезапустить» открывает тулзу заново, а не просто закрывает её.",
+      "В списке приложений названия тулз — без «[KR]».",
+      "Кнопка на вкладке «Версии» теперь называется «Проверить обновления».",
+      "Установка версии не обрывается, если от её прошлой копии остались файлы, занятые открытой тулзой."
+     ],
+     "manifest": "manifests/DevToolkit/0.1.2.json",
+     "sha256": "d9c89bad444bee61dd2e0c5bf5a6694bbb5ae6deab9fa9891da4103b3ac0c796"
     }
    ],
    "title": "[KR] Dev Toolkit"
@@ -48,9 +61,21 @@
      ],
      "manifest": "manifests/ProjectBuilder/0.1.1.json",
      "sha256": "eb70b3f6bc7d433b0da7a715b19c095923d66aaf4866325bf8c8daefbe07f286"
+    },
+    {
+     "version": "0.1.2",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "После обновления кнопка «Перезапустить» открывает тулзу заново, а не просто закрывает её.",
+      "Название без «[KR]» в заголовке окна и в списке приложений.",
+      "Файл префикса с именем `$PREFIX$` или `$PREFIX$.txt` теперь читается. Раньше префиксом становилось имя папки, а сам файл попадал в PBO — такие моды стоит пересобрать."
+     ],
+     "manifest": "manifests/ProjectBuilder/0.1.2.json",
+     "sha256": "2682b62e043ed3b849258ee7152e934ac4e26aa19e9fceadc0b15c0b97a27d3a"
     }
    ],
-   "title": "[KR] Project Builder"
+   "title": "Project Builder"
   },
   "AddonSigner": {
    "versions": [
@@ -63,9 +88,21 @@
      ],
      "manifest": "manifests/AddonSigner/0.1.0.json",
      "sha256": "d5205999bb89ea43db588d8541c4eaa43c0ab86f16b41cb9692a3144fda50597"
+    },
+    {
+     "version": "0.1.1",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "После обновления кнопка «Перезапустить» открывает тулзу заново, а не просто закрывает её.",
+      "Название без «[KR]» в заголовке окна и в списке приложений.",
+      "Можно подписать отдельный PBO: перетащите его в окно или нажмите «Добавить PBO» — не нужно добавлять всю папку."
+     ],
+     "manifest": "manifests/AddonSigner/0.1.1.json",
+     "sha256": "df24dcf62103c4e8eed86bd4b2c4dc4ec7b0ff7351d3001f38c7b1ca7d041aa2"
     }
    ],
-   "title": "[KR] Addon Signer"
+   "title": "Addon Signer"
   },
   "SoundConverter": {
    "versions": [
@@ -88,9 +125,20 @@
      ],
      "manifest": "manifests/SoundConverter/0.1.1.json",
      "sha256": "0aa066a3a61a44ca8dea6aed63d6f99b245a716768aff4dfe740787c0ad70b01"
+    },
+    {
+     "version": "0.1.2",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "После обновления кнопка «Перезапустить» открывает тулзу заново, а не просто закрывает её.",
+      "Название без «[KR]» в заголовке окна и в списке приложений."
+     ],
+     "manifest": "manifests/SoundConverter/0.1.2.json",
+     "sha256": "a5de3ce799fa09b61add7df98fca2892bc1b0ce5c9a55bbedfe52b537e9256fe"
     }
    ],
-   "title": "[KR] Sound Converter"
+   "title": "Sound Converter"
   },
   "ImagesetEditor": {
    "versions": [
@@ -113,9 +161,22 @@
      ],
      "manifest": "manifests/ImagesetEditor/0.1.1.json",
      "sha256": "08308b10010ff46cef7c628f14a27b4cea062a268f8bb52c60e24704b0d78b76"
+    },
+    {
+     "version": "0.1.2",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "После обновления кнопка «Перезапустить» открывает тулзу заново, а не просто закрывает её.",
+      "Название без «[KR]» в заголовке окна и в списке приложений.",
+      "Ctrl+Z отменяет правки и после перезапуска: история у каждого файла своя.",
+      "Сохранение теперь кнопкой или Ctrl+S, при закрытии с несохранёнными правками тулза спросит. Автосохранение, как раньше, включается в настройках (шестерёнка справа вверху); там же число шагов отмены — 50 по умолчанию, до 512."
+     ],
+     "manifest": "manifests/ImagesetEditor/0.1.2.json",
+     "sha256": "145644a85fe6e9dc8c21817203b6b9cee7bea54ec15a8bfd07959da7890691a7"
     }
    ],
-   "title": "[KR] Imageset Editor"
+   "title": "Imageset Editor"
   },
   "TextureEditor": {
    "versions": [
@@ -128,9 +189,20 @@
      ],
      "manifest": "manifests/TextureEditor/0.1.0.json",
      "sha256": "7a41d0fb39bcf77c411e087d4917ee55e28483a76c4686683ce01992bb3cbd72"
+    },
+    {
+     "version": "0.1.1",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "После обновления кнопка «Перезапустить» открывает тулзу заново, а не просто закрывает её.",
+      "Название без «[KR]» в заголовке окна и в списке приложений."
+     ],
+     "manifest": "manifests/TextureEditor/0.1.1.json",
+     "sha256": "14e400eefaf24b80970ad3b2660817e5bbf5c34248f8227aca195be2c7a8789a"
     }
    ],
-   "title": "[KR] Texture Editor"
+   "title": "Texture Editor"
   },
   "TextureConverter": {
    "versions": [
@@ -143,9 +215,20 @@
      ],
      "manifest": "manifests/TextureConverter/0.1.0.json",
      "sha256": "dc0d82dc9bdf13037b823f5d9026f46502ea6f94570e90ea8a77b4187a2b4d15"
+    },
+    {
+     "version": "0.1.1",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "После обновления кнопка «Перезапустить» открывает тулзу заново, а не просто закрывает её.",
+      "Название без «[KR]» в заголовке окна и в списке приложений."
+     ],
+     "manifest": "manifests/TextureConverter/0.1.1.json",
+     "sha256": "a9652a324927afdd027c98fdd1f82ae9a615bf15a0da4ddfd6062532dfa7d55f"
     }
    ],
-   "title": "[KR] Texture Converter"
+   "title": "Texture Converter"
   },
   "ModelConverter": {
    "versions": [
@@ -158,9 +241,20 @@
      ],
      "manifest": "manifests/ModelConverter/0.1.0.json",
      "sha256": "838eb46703d63baf696b3a8adeedb7e21805ae91a3ae84f5284ec3f5ff38b105"
+    },
+    {
+     "version": "0.1.1",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "После обновления кнопка «Перезапустить» открывает тулзу заново, а не просто закрывает её.",
+      "Название без «[KR]» в заголовке окна и в списке приложений."
+     ],
+     "manifest": "manifests/ModelConverter/0.1.1.json",
+     "sha256": "e56cf947db1d963b0d9c0ba4c4a4830dfb47bbf2999744fa723aa0af80db7910"
     }
    ],
-   "title": "[KR] Model Converter"
+   "title": "Model Converter"
   },
   "DeBinarizer": {
    "versions": [
@@ -173,9 +267,20 @@
      ],
      "manifest": "manifests/DeBinarizer/0.1.0.json",
      "sha256": "258e165bdd43be355cf8fab2a6928c7748c3dd5872662dded3d25da07f53208e"
+    },
+    {
+     "version": "0.1.1",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "После обновления кнопка «Перезапустить» открывает тулзу заново, а не просто закрывает её.",
+      "Название без «[KR]» в заголовке окна и в списке приложений."
+     ],
+     "manifest": "manifests/DeBinarizer/0.1.1.json",
+     "sha256": "96be8202b419107f1e54ce91caa40c5abdada2dadc77c54173cb34168421be60"
     }
    ],
-   "title": "[KR] DeBinarizer"
+   "title": "DeBinarizer"
   },
   "PboUnpacker": {
    "versions": [
@@ -188,9 +293,21 @@
      ],
      "manifest": "manifests/PboUnpacker/0.1.0.json",
      "sha256": "eb1558da217a256fd2eced919d975fcf9c374e2411b5155de47c36509652b287"
+    },
+    {
+     "version": "0.1.1",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "После обновления кнопка «Перезапустить» открывает тулзу заново, а не просто закрывает её.",
+      "Название без «[KR]» в заголовке окна и в списке приложений.",
+      "Если в PBO уже лежит файл префикса (`$PREFIX$` и подобные), второй — `$PBOPREFIX$.txt` — рядом не создаётся."
+     ],
+     "manifest": "manifests/PboUnpacker/0.1.1.json",
+     "sha256": "f61ec93c2fa40d02b2356003310aa100e2b64d96449367d02eb40eb99363c23d"
     }
    ],
-   "title": "[KR] PBO Unpacker"
+   "title": "PBO Unpacker"
   },
   "AnmConverter": {
    "versions": [
@@ -203,10 +320,21 @@
      ],
      "manifest": "manifests/AnmConverter/0.1.0.json",
      "sha256": "3ea2bf0a195a1d876884113381832273623a5b9f63c7dbc9b68f538c050d5cff"
+    },
+    {
+     "version": "0.1.1",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "После обновления кнопка «Перезапустить» открывает тулзу заново, а не просто закрывает её.",
+      "Название без «[KR]» в заголовке окна и в списке приложений."
+     ],
+     "manifest": "manifests/AnmConverter/0.1.1.json",
+     "sha256": "f5e92e4dbabe8833f08d27393646d75e69244327da107370b42bd6d7912f4875"
     }
    ],
-   "title": "[KR] ANM Converter"
+   "title": "ANM Converter"
   }
  },
- "published": "2026-10-25T11:26:41Z"
+ "published": "2026-10-25T18:57:11Z"
 }

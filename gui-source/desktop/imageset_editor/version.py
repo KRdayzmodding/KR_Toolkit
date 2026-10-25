@@ -8,5 +8,5 @@
 руками при выпуске; сборщик exe кладёт её в version.json рядом с exe, и
 [KR] Imageset Editor показывает её на карточке.
 """
-NAME = "[KR] Imageset Editor"
-VERSION = "0.1.1"
+NAME = "Imageset Editor"
+VERSION = "0.1.2"

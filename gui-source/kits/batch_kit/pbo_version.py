@@ -4,5 +4,5 @@ r"""Название и версия тулзы — одно место для �
 Версия: MAJOR.MINOR.PATCH (0.1.0 — первая версия с обновлениями). Сборщик кладёт
 её в runtime\versions.json, [KR] Dev Toolkit показывает на карточке.
 """
-NAME = "[KR] PBO Unpacker"
-VERSION = "0.1.0"
+NAME = "PBO Unpacker"
+VERSION = "0.1.1"

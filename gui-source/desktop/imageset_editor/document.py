@@ -8,7 +8,13 @@
 Правка — команда в QUndoStack (Ctrl+Z / Ctrl+Y). Правка одного спрайта числами
 склеивается в одну команду; всё остальное (перенос, группы, текстуры, правка
 рамки мышью) — снимок состояния до и после. «Изменён» — стек не в чистом
-состоянии. Сохраняет окно само (автосохранение, как в VSCode).
+состоянии. Сохраняет окно — само (автосохранение, как в VSCode) или по Ctrl+S,
+если автосохранение выключено в настройках.
+
+История отмены переживает перезапуск (history.py): при открытии она
+восстанавливается, если файл на диске совпадает с одним из её шагов, — на
+этот шаг; иначе (файл правили снаружи) отбрасывается, и окно об этом пишет.
+Шагов в стеке — не больше настройки (по умолчанию 50, до 512).
 
 Перед первой записью за сессию прежний файл уходит копией в папку бэкапов
 (принцип 17). Ванильные файлы (P:\\gui, P:\\DZ, P:\\scripts) — только просмотр
@@ -26,6 +32,7 @@ import numpy as np
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtGui import QImage, QUndoCommand, QUndoStack
 
+import history
 import worker as ie
 
 BACKUP_ROOT = Path.home() / ".kr_devtoolkit" / "imageset_backup"
@@ -67,7 +74,8 @@ class Document(QObject):
     dirty_changed = Signal(bool)
     saved = Signal(str)               # путь копии прежнего файла ("" — копии не было)
 
-    def __init__(self, path: Path, backup_root: Path = BACKUP_ROOT, parent=None):
+    def __init__(self, path: Path, backup_root: Path = BACKUP_ROOT, parent=None,
+                 history_root: Optional[Path] = None, history_limit: int = history.LIMIT_DEFAULT):
         super().__init__(parent)
         self.path = Path(path)
         raw = ie.read(self.path)                        # ошибку отдаём вызывающему
@@ -90,8 +98,20 @@ class Document(QObject):
         self.backup_root = backup_root
         self.backup: Optional[Path] = None
         self.undo = QUndoStack(self)
-        self.undo.cleanChanged.connect(lambda clean: self.dirty_changed.emit(not clean))
+        self.undo.setUndoLimit(history.clamp(history_limit))
+        # метод, а не лямбда: связь с методом Qt снимает сам, когда документ удаляют, а лямбду
+        # стек дёргал из своего деструктора уже после документа (Signal source has been deleted)
+        self.undo.cleanChanged.connect(self._on_clean)
         self._image: Optional[QImage] = None
+        self._quiet = False                             # восстановление истории — без перерисовок
+        #: файл истории; None — без истории (только просмотр или не задана папка)
+        self.history_file = (history.file_for(history_root, self.path)
+                             if history_root is not None and not self.readonly else None)
+        #: шагов истории, восстановленных из прошлой сессии; history_dropped — была, но не подошла
+        self.history_restored = 0
+        self.history_dropped = False
+        if self.history_file is not None:
+            self._load_history()
 
     def _new_id(self, sprite: Sprite) -> int:
         # номер только растёт: номер удалённого спрайта не достаётся новому, и холст
@@ -99,6 +119,9 @@ class Document(QObject):
         self._next_id = getattr(self, "_next_id", 0) + 1
         self.items[self._next_id] = sprite
         return self._next_id
+
+    def _on_clean(self, clean: bool) -> None:
+        self.dirty_changed.emit(not clean)
 
     # ------------------------------------------------------------------ чтение
     @property
@@ -144,8 +167,10 @@ class Document(QObject):
         self.textures = list(textures)
         if textures_moved:
             self._image = None
-            self.textures_changed.emit()
-        self.changed.emit(None)
+            if not self._quiet:
+                self.textures_changed.emit()
+        if not self._quiet:
+            self.changed.emit(None)
 
     def _change(self, text: str, mutate) -> None:
         """Правка раскладки снимком: состояние до, правка, состояние после."""
@@ -306,8 +331,98 @@ class Document(QObject):
         if copied:
             self.backup = Path(copied)
         self.undo.setClean()
+        self.save_history()                   # сохранённый шаг — опора сверки при следующем открытии
         self.saved.emit(copied)
         return True
+
+    # ------------------------------------------------------------------ история между сессиями
+    def _history(self):
+        """Все шаги стека состояниями: от текущего назад и вперёд по командам."""
+        n, index = self.undo.count(), self.undo.index()
+        states = [None] * (n + 1)
+        states[index] = self._state()
+        for j in range(index - 1, -1, -1):
+            states[j] = self.undo.command(j).backward(states[j + 1])
+        for j in range(index, n):
+            states[j + 1] = self.undo.command(j).forward(states[j])
+        return states, [self.undo.command(j).text() for j in range(n)], index, self.undo.cleanIndex()
+
+    def save_history(self) -> bool:
+        """Записать историю на диск (пустая — убрать файл). Не вышло — тихо: это удобство,
+        а не данные, и падать из-за него посреди работы нельзя."""
+        if self.history_file is None:
+            return False
+        try:
+            if self.undo.count() == 0:
+                if self.history_file.exists():
+                    self.history_file.unlink()
+                return True
+            history.write(self.history_file, history.encode(self.path, *self._history()))
+            return True
+        except OSError:
+            return False
+
+    def _load_history(self) -> None:
+        data = history.read(self.history_file)
+        if data is None:
+            return
+        try:
+            states, texts, index, clean = history.decode(data, Sprite, Texture)
+        except ValueError:
+            states = None
+        # файл на диске — какой шаг истории: сохранённый, текущий, иначе любой с конца
+        want = history.shape(self._state())
+        found = None
+        if states is not None:
+            order = [k for k in (clean, index) if 0 <= k < len(states)] + list(range(len(states) - 1, -1, -1))
+            found = next((k for k in order if history.shape(states[k]) == want), None)
+        if found is None:
+            # файл правили вне редактора (или история битая) — она к нему больше не относится
+            self.history_dropped = True
+            try:
+                self.history_file.unlink()
+            except OSError:
+                pass
+            return
+        # текстуры — как нашлись на диске сейчас, а не в прошлой сессии
+        files = {t.path: t.file for t in self.textures}
+        states = [(i, t, g, [x._replace(file=files.get(x.path, x.file)) for x in tex], n)
+                  for i, t, g, tex, n in states]
+        states, texts, index, clean = history.trim(states, texts, found, found, self.undo.undoLimit())
+        self._import(states, texts, index, clean, self.undo.undoLimit())
+        self.history_restored = len(texts)
+
+    def _import(self, states, texts, index: int, clean: int, limit: int) -> None:
+        """Собрать стек заново из состояний: стоим на index, сохранён clean (-1 — нигде)."""
+        self._quiet = True
+        try:
+            self.undo.clear()
+            self.undo.setUndoLimit(limit)             # Qt меняет предел только у пустого стека
+            self._restore(states[-1])
+            for j, text in enumerate(texts):
+                self.undo.push(_Snapshot(self, states[j], states[j + 1], text))
+            if 0 <= clean <= len(texts):
+                self.undo.setIndex(clean)
+                self.undo.setClean()
+            else:
+                self.undo.resetClean()
+            self.undo.setIndex(index)
+        finally:
+            self._quiet = False
+        self._next_id = max([getattr(self, "_next_id", 0)] + [k for s in states for k in s[0]])
+        self._image = None
+        self.textures_changed.emit()
+        self.changed.emit(None)
+
+    def set_history_limit(self, limit: int) -> None:
+        """Новый предел шагов — сразу для открытого файла: лишние старые шаги уходят."""
+        limit = history.clamp(limit)
+        if limit == self.undo.undoLimit():
+            return
+        if self.undo.count() == 0:
+            self.undo.setUndoLimit(limit)
+            return
+        self._import(*history.trim(*self._history(), limit), limit)
 
     # ------------------------------------------------------------------ текстура
     def texture_path(self, index: int = 0) -> Optional[Path]:
@@ -355,6 +470,17 @@ class _SetSprite(QUndoCommand):
     def undo(self) -> None:
         self.doc._put(self.sid, self.old)
 
+    # состояние до и после — для истории на диске, документ не трогают
+    def forward(self, state):
+        items = dict(state[0])
+        items[self.sid] = self.new
+        return (items,) + tuple(state[1:])
+
+    def backward(self, state):
+        items = dict(state[0])
+        items[self.sid] = self.old
+        return (items,) + tuple(state[1:])
+
 
 class _Snapshot(QUndoCommand):
     """Правка раскладки: всё состояние до и после."""
@@ -367,12 +493,19 @@ class _Snapshot(QUndoCommand):
     def redo(self) -> None:
         if self._first:                       # правка уже сделана — при push не повторяем
             self._first = False
-            self.doc.changed.emit(None)
+            if not self.doc._quiet:
+                self.doc.changed.emit(None)
             return
         self.doc._restore(self.after)
 
     def undo(self) -> None:
         self.doc._restore(self.before)
+
+    def forward(self, _state):
+        return self.after
+
+    def backward(self, _state):
+        return self.before
 
 
 class _SetRect(_SetSprite):

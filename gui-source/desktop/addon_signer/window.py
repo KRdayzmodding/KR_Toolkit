@@ -192,6 +192,11 @@ class MainWindow(ToolWindow):
         self.folder_add.setToolTip(T("folders.add"))
         self.folder_add.clicked.connect(self._pick_folder)
         fh.addWidget(self.folder_add)
+        # отдельный PBO — без всей его папки (багрепорт 25.10.2026)
+        self.file_add = TransparentToolButton(FluentIcon.DOCUMENT, self)
+        self.file_add.setToolTip(T("files.add"))
+        self.file_add.clicked.connect(self._pick_files)
+        fh.addWidget(self.file_add)
         self.folder_remove = TransparentToolButton(FluentIcon.REMOVE, self)
         self.folder_remove.setToolTip(T("folders.remove"))
         self.folder_remove.clicked.connect(self._remove_folders)
@@ -211,6 +216,9 @@ class MainWindow(ToolWindow):
         self.folder_pick = PushButton(FluentIcon.FOLDER_ADD, T("folders.pick"), empty)
         self.folder_pick.clicked.connect(self._pick_folder)
         pick_row.addWidget(self.folder_pick)
+        self.file_pick = PushButton(FluentIcon.DOCUMENT, T("files.pick"), empty)
+        self.file_pick.clicked.connect(self._pick_files)
+        pick_row.addWidget(self.file_pick)
         pick_row.addStretch(1)
         el.addLayout(pick_row)
         el.addStretch(1)
@@ -478,6 +486,13 @@ class MainWindow(ToolWindow):
         if folder:
             self._add_folders([folder])
 
+    def _pick_files(self) -> None:
+        folders = self.store.active().folders
+        start = str(Path(folders[-1]).parent if Path(folders[-1]).is_file() else folders[-1]) if folders else ""
+        files, _ = QFileDialog.getOpenFileNames(self, T("files.pick.title"), start, "*.pbo")
+        if files:
+            self._add_folders(files)
+
     def _remove_folders(self) -> None:
         rows = sorted({self.folder_list.row(i) for i in self.folder_list.selectedItems()},
                       reverse=True)
@@ -508,8 +523,11 @@ class MainWindow(ToolWindow):
         data = event.mimeData()
         if not data.hasUrls():
             return []
+        # папки и сами PBO: подписать один файл, не таща всю папку (багрепорт 25.10.2026)
         return [u.toLocalFile() for u in data.urls()
-                if u.isLocalFile() and Path(u.toLocalFile()).is_dir()]
+                if u.isLocalFile() and (Path(u.toLocalFile()).is_dir()
+                                        or (Path(u.toLocalFile()).is_file()
+                                            and u.toLocalFile().lower().endswith(".pbo")))]
 
     # ================================================================== проверка
     def _stop_job(self) -> None:
@@ -769,7 +787,8 @@ class MainWindow(ToolWindow):
         locked = self.signing
         for widget in (self.key_box, self.key_create, self.key_add, self.key_remove,
                        self.preset_box, self.preset_new, self.preset_delete, self.preset_rename,
-                       self.folder_add, self.folder_pick, self.rescan_btn, self.table):
+                       self.folder_add, self.folder_pick, self.file_add, self.file_pick,
+                       self.rescan_btn, self.table):
             widget.setEnabled(not locked)
         named = self.store.active().name != SCRATCH
         self.preset_rename.setEnabled(not locked and named)

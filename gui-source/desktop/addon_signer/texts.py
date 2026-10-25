@@ -33,12 +33,15 @@ TEXT = {
     "preset.delete.title": "Удалить пресет «{name}»?",
     "preset.delete.text": "Удалится только список папок. Папки, PBO и подписи останутся",
 
-    "folders.title": "Папки",
+    "folders.title": "Папки и PBO",
     "folders.add": "Добавить папку",
-    "folders.remove": "Убрать папку из списка",
-    "folders.drop": "Перетащите сюда папки с PBO —\nвложенные папки тоже просматриваются",
+    "folders.remove": "Убрать из списка",
+    "folders.drop": "Перетащите сюда папки с PBO или сами PBO —\nвложенные папки тоже просматриваются",
     "folders.pick": "Добавить папку",
     "folders.pick.title": "Папка с PBO",
+    "files.add": "Добавить PBO",
+    "files.pick": "Добавить PBO",
+    "files.pick.title": "PBO для подписи",
 
     "pbo.title": "PBO",
     "pbo.all": "Отметить все",

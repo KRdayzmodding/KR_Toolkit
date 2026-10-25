@@ -8,5 +8,5 @@
 руками при выпуске; сборщик exe кладёт её в version.json рядом с exe, и
 [KR] Dev Toolkit показывает её на карточке.
 """
-NAME = "[KR] Addon Signer"
-VERSION = "0.1.0"
+NAME = "Addon Signer"
+VERSION = "0.1.1"

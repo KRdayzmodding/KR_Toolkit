@@ -356,7 +356,13 @@ class DocumentView(QWidget):
         self._fill()
         self._fill_textures()
         self._show_props()
-        self._show_info()
+        # что стало с историей прошлых сессий — тулза говорит, что решила сама (принцип 13)
+        if doc.history_dropped:
+            self._show_info(T("history.dropped"), error=True)
+        elif doc.history_restored:
+            self._show_info(T("history.restored", count=doc.history_restored))
+        else:
+            self._show_info()
         self._sync_buttons()
         self._on_edit_mode(None)
         self._show_set()

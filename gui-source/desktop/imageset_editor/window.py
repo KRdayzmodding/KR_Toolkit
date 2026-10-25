@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Главное окно [KR] Imageset Editor — вкладки, как в VSCode.
+"""Главное окно Imageset Editor — вкладки, как в VSCode.
 
 Заказ юзера 23.10.2026:
 
@@ -9,6 +9,12 @@
 * окно помнит открытые вкладки и активную;
 * автосохранение — при переключении вкладки и при потере фокуса окном (и при
   закрытии вкладки или окна).
+
+Заказ юзера 25.10.2026: автосохранение — настройка, по умолчанию выключено;
+без него сохраняют кнопка и Ctrl+S, а закрытие с несохранёнными правками спрашивает;
+история отмены каждого файла переживает перезапуск, шагов — по настройке.
+История пишется на диск всегда, в обоих режимах: после «Не сохранять» правки
+можно вернуть при следующем открытии.
 
 Оформление — как у остальных тулз: своя шапка (qts_ui.frame), токены QTS.
 """
@@ -29,6 +35,7 @@ from texts import T
 from qts_ui import tokens
 from qts_ui.frame import ToolWindow
 from qts_ui.rows import shrink
+from settings import SettingsDialog, UnsavedBox
 from store import Store
 
 MIN = (900, 600)
@@ -102,6 +109,15 @@ class ImagesetWindow(ToolWindow):
         self.tabs.currentChanged.connect(self._on_tab)
         self.tabs.tabCloseRequested.connect(self.close_tab)
         top.addWidget(self.tabs, 1)
+        # «Сохранить» нужна только без автосохранения — тогда и видна (п. 21)
+        self.save_btn = TransparentToolButton(FluentIcon.SAVE, self)
+        self.save_btn.setToolTip(T("save"))
+        self.save_btn.clicked.connect(self.save_all)
+        top.addWidget(self.save_btn)
+        self.settings_btn = TransparentToolButton(FluentIcon.SETTING, self)
+        self.settings_btn.setToolTip(T("settings"))
+        self.settings_btn.clicked.connect(self.open_settings)
+        top.addWidget(self.settings_btn)
         root.addLayout(top)
 
         self.stack = QStackedWidget(self)
@@ -161,7 +177,9 @@ class ImagesetWindow(ToolWindow):
                 continue
             try:
                 # бэкапы — рядом с файлом состояния окна: тест с копией пишет к себе (п. 67)
-                doc = Document(Path(path), backup_root=self.store.path.parent / "imageset_backup")
+                doc = Document(Path(path), backup_root=self.store.path.parent / "imageset_backup",
+                               history_root=self.store.path.parent / "imageset_history",
+                               history_limit=self.store.history)
             except Exception as exc:  # noqa: BLE001 — чужой файл ломается как угодно
                 problems.append(T("tab.unreadable", path=path, text=exc))
                 continue
@@ -175,6 +193,7 @@ class ImagesetWindow(ToolWindow):
             tip = str(doc.path) + ("\n" + T("tab.readonly.tip") if doc.readonly else "")
             self.tabs.setTabToolTip(index, tip)
             doc.dirty_changed.connect(lambda _d, k=key: self._refresh_tab(k))
+            doc.dirty_changed.connect(lambda _d: self._sync_save())
             last = key
         if last is not None:
             self.tabs.setCurrentIndex(self.order.index(last))
@@ -213,7 +232,7 @@ class ImagesetWindow(ToolWindow):
         for doc, view in self.docs.values():
             if view is shown and (index < 0 or index >= len(self.order)
                                   or self.docs[self.order[index]][1] is not view):
-                doc.save()
+                self._leave(doc)
         if 0 <= index < len(self.order):
             doc, view = self.docs[self.order[index]]
             self.stack.setCurrentWidget(view)
@@ -225,8 +244,15 @@ class ImagesetWindow(ToolWindow):
         if not 0 <= index < len(self.order):
             return
         key = self.order[index]
+        doc = self.docs[key][0]
+        if not self.store.autosave and doc.dirty:
+            choice = self._ask([doc])
+            if choice is None:
+                return
+            if choice == "save":
+                doc.save()
         doc, view = self.docs.pop(key)
-        doc.save()
+        self._leave(doc)
         self.order.pop(index)
         self.tabs.removeTab(index)
         self.stack.removeWidget(view)
@@ -251,6 +277,11 @@ class ImagesetWindow(ToolWindow):
             self.stack.setCurrentWidget(self.empty)
             self.setWindowTitle(T("app.title"))
         self.tabs.setVisible(bool(self.order))
+        self._sync_save()
+
+    def _sync_save(self) -> None:
+        self.save_btn.setVisible(not self.store.autosave)
+        self.save_btn.setEnabled(any(doc.dirty for doc, _view in self.docs.values()))
 
     def _remember(self) -> None:
         self.store.tabs = [str(self.docs[k][0].path) for k in self.order]
@@ -258,24 +289,54 @@ class ImagesetWindow(ToolWindow):
         self.store.active = str(doc.path) if doc else ""
         self.store.save()
 
-    # ================================================================== автосохранение
+    # ================================================================== сохранение
     def save_all(self) -> None:
+        """Ctrl+S и кнопка — сохранить все файлы, в любом режиме."""
         for doc, _view in self.docs.values():
             doc.save()
+
+    def _leave(self, doc: Document) -> None:
+        """Ушли с файла (вкладка, окно, закрытие): с автосохранением — записать; история —
+        всегда, она хранит и несохранённые правки."""
+        if self.store.autosave:
+            doc.save()
+        doc.save_history()
+
+    def _ask(self, docs: List[Document]) -> Optional[str]:
+        box = UnsavedBox([doc.path.name for doc in docs], self)
+        return box.choice if box.exec() else None
 
     def changeEvent(self, event) -> None:
         # потеря фокуса окном — сохранить всё, как VSCode с autoSave onFocusChange
         # окно ещё не собрано — сохранять нечего (рамка шлёт события из конструктора, багрепорт 25.10.2026)
         if event.type() == QEvent.ActivationChange and hasattr(self, "docs") and not self.isActiveWindow():
-            self.save_all()
+            for doc, _view in self.docs.values():
+                self._leave(doc)
         super().changeEvent(event)
+
+    def open_settings(self) -> None:
+        SettingsDialog(self.store, self).exec()
+        for doc, _view in self.docs.values():
+            doc.set_history_limit(self.store.history)
+        if self.store.autosave:                 # включили — несохранённое записать сразу
+            self.save_all()
+        self._sync_save()
 
     def _repaint_theme(self, *_args) -> None:
         for _doc, view in self.docs.values():
             view.repaint_theme()
 
     def closeEvent(self, event) -> None:
-        self.save_all()
+        dirty = [doc for doc, _view in self.docs.values() if doc.dirty and not doc.readonly]
+        if dirty and not self.store.autosave:
+            choice = self._ask(dirty)
+            if choice is None:
+                event.ignore()
+                return
+            if choice == "save":
+                self.save_all()
+        for doc, _view in self.docs.values():
+            self._leave(doc)
         self._remember()
         self.store.window["size"] = [self.width(), self.height()]
         self.store.save()
