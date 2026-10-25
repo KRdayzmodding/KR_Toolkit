@@ -100,6 +100,16 @@
      ],
      "manifest": "manifests/AddonSigner/0.1.1.json",
      "sha256": "df24dcf62103c4e8eed86bd4b2c4dc4ec7b0ff7351d3001f38c7b1ca7d041aa2"
+    },
+    {
+     "version": "0.1.2",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "Заголовок «PBO» в таблице больше не обрезается."
+     ],
+     "manifest": "manifests/AddonSigner/0.1.2.json",
+     "sha256": "100bf1ed9c797a35fe773d4b80e34c1f90629f4262a3c88c6ba0cefecf645564"
     }
    ],
    "title": "Addon Signer"
@@ -336,5 +346,5 @@
    "title": "ANM Converter"
   }
  },
- "published": "2026-10-25T18:57:11Z"
+ "published": "2026-10-25T19:17:54Z"
 }

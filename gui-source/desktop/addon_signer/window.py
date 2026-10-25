@@ -19,7 +19,7 @@ import subprocess
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QColor, QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QAbstractItemView, QApplication, QFileDialog, QHBoxLayout, QHeaderView, QStackedWidget,
@@ -48,6 +48,7 @@ STATE_ORDER = {sg.MISSING: 0, sg.STALE: 1, sg.FOREIGN: 2, sg.BROKEN: 3, sg.OK: 4
 CHECKABLE = (sg.MISSING, sg.STALE, sg.FOREIGN)
 MIN = (620, 660)            # минимальный размер — он же размер первого запуска
 FOLDERS_H = 96              # список папок: три строки, остальное — таблице PBO
+SORT_ARROW = tokens.SPACE_M + tokens.SPACE_XXS   # место под стрелку сортировки в заголовке
 #: состояние → роль цвета
 ROLE = {sg.OK: "success", sg.STALE: "warning", sg.MISSING: "text_dim",
         sg.FOREIGN: "info", sg.BROKEN: "error"}
@@ -257,6 +258,14 @@ class MainWindow(ToolWindow):
         hdr.setSectionResizeMode(COL_STATE, QHeaderView.ResizeToContents)
         hdr.setSectionResizeMode(COL_PBO, QHeaderView.ResizeToContents)
         hdr.setSectionResizeMode(COL_WHERE, QHeaderView.Stretch)
+        # по содержимому заголовок считается без стрелки сортировки: на пустой таблице «PBO»
+        # обрезалось до «PB» (45 px: текст 25 + поля 20). Подсказка размера у заголовка —
+        # то, что Qt берёт за его ширину; содержимое шире — колонка всё равно растёт.
+        # Запас — с обеих сторон: текст центрируется по всей секции, а стрелка срезает правый
+        # край (с запасом только справа выходило «PBC»)
+        for col in (COL_STATE, COL_PBO):
+            item = self.table.horizontalHeaderItem(col)
+            item.setSizeHint(QSize(hdr.sectionSizeHint(col) + 2 * SORT_ARROW, hdr.sizeHint().height()))
         # заголовок — сортировка (юзер 23.10.2026); выбранная запоминается
         column, order = self.store.window.get("sort", [COL_PBO, 0])
         hdr.setSortIndicator(int(column), Qt.SortOrder(int(order)))

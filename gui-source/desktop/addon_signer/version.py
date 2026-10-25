@@ -9,4 +9,4 @@
 [KR] Dev Toolkit показывает её на карточке.
 """
 NAME = "Addon Signer"
-VERSION = "0.1.1"
+VERSION = "0.1.2"
