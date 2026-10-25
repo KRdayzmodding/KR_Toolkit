@@ -10,19 +10,22 @@
 
 | Тулза | Что делает |
 |---|---|
-| **[KR] Project Builder** | Запаковка мода в PBO: проверки, исправления, подпись, инкрементальная сборка |
-| **[KR] Texture Editor** | Просмотр и редактирование текстур: SMDI, размер, Френель |
-| **[KR] Imageset Editor** | Атласы иконок интерфейса: просмотр и правка `.imageset` |
-| **[KR] Texture Converter** | Картинки ⇄ PAA/EDDS, сразу много файлов |
-| **[KR] Model Converter** | Бинарные модели (ODOL) → редактируемые (MLOD) с `model.cfg` |
-| **[KR] DeBinarizer** | `config.bin`, `.rvmat` и другие бинарные файлы → текст |
-| **[KR] PBO Unpacker** | Распаковка PBO целиком |
-| **[KR] ANM Converter** | Анимации ANM ⇄ TXA |
-| **[KR] Sound Converter** | WAV → OGG для игры |
-| **[KR] Addon Signer** | Создание ключей и подпись PBO |
+| **[[KR] Project Builder](docs/ProjectBuilder.md)** | Запаковка мода в PBO: проверки, исправления, подпись, инкрементальная сборка |
+| **[[KR] Texture Editor](docs/TextureEditor.md)** | Просмотр и редактирование текстур: SMDI, размер, Френель |
+| **[[KR] Imageset Editor](docs/ImagesetEditor.md)** | Атласы иконок интерфейса: просмотр и правка `.imageset` |
+| **[[KR] Texture Converter](docs/TextureConverter.md)** | Картинки ⇄ PAA/EDDS, сразу много файлов |
+| **[[KR] Model Converter](docs/ModelConverter.md)** | Бинарные модели (ODOL) → редактируемые (MLOD) с `model.cfg` |
+| **[[KR] DeBinarizer](docs/DeBinarizer.md)** | `config.bin`, `.rvmat` и другие бинарные файлы → текст |
+| **[[KR] PBO Unpacker](docs/PboUnpacker.md)** | Распаковка PBO целиком |
+| **[[KR] ANM Converter](docs/AnmConverter.md)** | Анимации ANM ⇄ TXA |
+| **[[KR] Sound Converter](docs/SoundConverter.md)** | WAV → OGG для игры |
+| **[[KR] Addon Signer](docs/AddonSigner.md)** | Создание ключей и подпись PBO |
 
-Все тулзы открываются из лаунчера **[KR] DevToolkit**. Там же включаются пункты
-для правого клика по PBO, P3D и BIN в проводнике.
+Все тулзы открываются из лаунчера **[[KR] DevToolkit](docs/DevToolkit.md)**.
+Там же включаются пункты для правого клика по PBO, P3D и BIN в проводнике.
+
+Щелчок по названию тулзы в таблице — краткий мануал: что она умеет и как ею
+пользоваться.
 
 ## Требования
 
