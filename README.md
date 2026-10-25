@@ -32,7 +32,10 @@
 
 ## Установка
 
-1. Скачайте `KR_DevToolkit_Setup.exe` и запустите.
+1. Скачайте установщик —
+   **[KR_DevToolkit_Setup.exe](https://github.com/KRdayzmodding/KR_Toolkit/releases/download/installer/KR_DevToolkit_Setup.exe)** —
+   и запустите. Ссылка постоянная: по ней всегда лежит свежий установщик.
+   Ставить его заново не нужно — дальше тулзы обновляются сами.
 2. Тулкит ставится в `%LOCALAPPDATA%\Programs\KR DevToolkit` — права
    администратора не нужны. На рабочем столе и в меню «Пуск» появится ярлык
    **[KR] DevToolkit**.
