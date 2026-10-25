@@ -5,7 +5,7 @@
    "versions": [
     {
      "version": "0.1.0",
-     "channel": "test",
+     "channel": "main",
      "date": "2026-10-25",
      "changes": [
       "Первый выпуск с обновлениями. Лаунчер: все тулзы, меню проводника, вкладка «Версии» с обновлениями."
@@ -20,7 +20,7 @@
    "versions": [
     {
      "version": "0.1.0",
-     "channel": "test",
+     "channel": "main",
      "date": "2026-10-25",
      "changes": [
       "Первый выпуск с обновлениями. Сборка мода в PBO с проверками, исправлениями и подписью."
@@ -35,7 +35,7 @@
    "versions": [
     {
      "version": "0.1.0",
-     "channel": "test",
+     "channel": "main",
      "date": "2026-10-25",
      "changes": [
       "Первый выпуск с обновлениями. Ключи и подписи для PBO."
@@ -50,7 +50,7 @@
    "versions": [
     {
      "version": "0.1.0",
-     "channel": "test",
+     "channel": "main",
      "date": "2026-10-25",
      "changes": [
       "Первый выпуск с обновлениями. WAV → OGG как у ванили."
@@ -60,7 +60,7 @@
     },
     {
      "version": "0.1.1",
-     "channel": "test",
+     "channel": "main",
      "date": "2026-10-25",
      "changes": [
       "Служебный выпуск: проверка доставки обновлений. В работе ничего не изменилось."
@@ -75,7 +75,7 @@
    "versions": [
     {
      "version": "0.1.0",
-     "channel": "test",
+     "channel": "main",
      "date": "2026-10-25",
      "changes": [
       "Первый выпуск с обновлениями. Правка .imageset, атласы, EDDS."
@@ -90,7 +90,7 @@
    "versions": [
     {
      "version": "0.1.0",
-     "channel": "test",
+     "channel": "main",
      "date": "2026-10-25",
      "changes": [
       "Первый выпуск с обновлениями. Просмотр текстур, SMDI, размер, Френель."
@@ -105,7 +105,7 @@
    "versions": [
     {
      "version": "0.1.0",
-     "channel": "test",
+     "channel": "main",
      "date": "2026-10-25",
      "changes": [
       "Первый выпуск с обновлениями. Картинки ⇄ PAA/EDDS пачкой."
@@ -120,7 +120,7 @@
    "versions": [
     {
      "version": "0.1.0",
-     "channel": "test",
+     "channel": "main",
      "date": "2026-10-25",
      "changes": [
       "Первый выпуск с обновлениями. ODOL → MLOD с model.cfg."
@@ -135,7 +135,7 @@
    "versions": [
     {
      "version": "0.1.0",
-     "channel": "test",
+     "channel": "main",
      "date": "2026-10-25",
      "changes": [
       "Первый выпуск с обновлениями. Бинарные конфиги → текст."
@@ -150,7 +150,7 @@
    "versions": [
     {
      "version": "0.1.0",
-     "channel": "test",
+     "channel": "main",
      "date": "2026-10-25",
      "changes": [
       "Первый выпуск с обновлениями. PBO целиком до исходника."
@@ -165,7 +165,7 @@
    "versions": [
     {
      "version": "0.1.0",
-     "channel": "test",
+     "channel": "main",
      "date": "2026-10-25",
      "changes": [
       "Первый выпуск с обновлениями. ANM ⇄ TXA без потерь."
