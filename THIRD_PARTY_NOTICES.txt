@@ -1,0 +1,65 @@
+[KR] DevToolkit — сторонние компоненты
+======================================
+
+В поставке [KR] DevToolkit есть программы и библиотеки других авторов. Ниже —
+что это, где используется и под какой лицензией. Полные тексты лицензий лежат
+в папке licenses рядом с этим файлом.
+
+
+Окна тулз (файлы *_GUI.exe)
+---------------------------
+
+  PySide6-Fluent-Widgets 1.11.2 (qfluentwidgets)        GPL-3.0        licenses\GPL-3.0.txt
+      Оформление окон. https://github.com/zhiyiYo/PyQt-Fluent-Widgets/tree/PySide6
+
+  PySideSix-Frameless-Window 0.8.1                      LGPL-3.0       licenses\LGPL-3.0.txt
+      Рамка окна. https://github.com/zhiyiYo/PyQt-Frameless-Window/tree/PySide6
+
+  darkdetect 0.8.0                                      BSD-3-Clause   licenses\darkdetect.txt
+
+  Окна тулз используют qfluentwidgets и поэтому распространяются на условиях
+  GNU GPL версии 3. Их исходники — в папке gui-source репозитория
+  https://github.com/KRdayzmodding/KR_Toolkit, для каждой выпущенной версии.
+  Окна только показывают; работу делают отдельные программы — командные
+  строки (файлы без _GUI), с которыми окно говорит через аргументы и вывод.
+  Командные строки qfluentwidgets не используют, работают без окон и
+  распространяются на своих условиях — см. LICENSE.txt.
+
+
+Qt и Python — во всех программах с окном
+----------------------------------------
+
+  Qt for Python (PySide6, Shiboken6) 6.11.1, Qt 6     LGPL-3.0       licenses\LGPL-3.0.txt
+      Библиотеки Qt лежат отдельными файлами в runtime\PySide6 и могут быть
+      заменены совместимыми. Исходники: https://download.qt.io/official_releases/QtForPython/
+      и https://code.qt.io/
+
+  Python 3.11.9                                        PSF-2.0        licenses\python.txt
+      Включает libffi (MIT) — его условия в том же файле.
+
+  OpenSSL 3.0.13 (из состава Python)                   Apache-2.0     licenses\Apache-2.0_openssl.txt
+
+
+Библиотеки
+----------
+
+  NumPy 2.2.6                                          BSD-3-Clause   licenses\numpy.txt
+  Pillow 11.3.0                                        MIT-CMU        licenses\pillow.txt
+  psutil 7.2.2                                         BSD-3-Clause   licenses\psutil.txt
+  python-soundfile 0.14.0                              BSD-3-Clause   licenses\soundfile.txt
+  libsndfile (из состава soundfile)                    LGPL-2.1       licenses\LGPL-2.1_libsndfile.txt
+      Отдельный файл runtime\_soundfile_data\libsndfile_x64.dll, может быть заменён.
+      Исходники: https://github.com/libsndfile/libsndfile
+  cffi 2.1.1                                           MIT-0          licenses\cffi.txt
+  pycparser 3.12                                       BSD-3-Clause   licenses\pycparser.txt
+  pywin32 311                                          PSF-2.0        https://github.com/mhammond/pywin32
+
+
+Инструменты сборки (в поставку не входят, на её лицензию не влияют)
+-------------------------------------------------------------------
+
+  PyInstaller 6.14.2 — GPL-2.0+ с исключением, разрешающим распространять
+      собранные им программы на любых условиях.
+  Nuitka 4.3.1 — AGPL-3.0 с исключением Nuitka Runtime Library Exception 1.0:
+      скомпилированное распространяется на условиях автора программы.
+  Inno Setup 6 — установщик. https://jrsoftware.org/isinfo.php
