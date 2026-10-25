@@ -57,6 +57,16 @@
      ],
      "manifest": "manifests/SoundConverter/0.1.0.json",
      "sha256": "b3479dc120b480fe2481a7d3548ae93629257a453bd393d04e8798ef60ddbea5"
+    },
+    {
+     "version": "0.1.1",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "Служебный выпуск: проверка доставки обновлений. В работе ничего не изменилось."
+     ],
+     "manifest": "manifests/SoundConverter/0.1.1.json",
+     "sha256": "0aa066a3a61a44ca8dea6aed63d6f99b245a716768aff4dfe740787c0ad70b01"
     }
    ],
    "title": "[KR] Sound Converter"
@@ -167,5 +177,5 @@
    "title": "[KR] ANM Converter"
   }
  },
- "published": "2026-10-25T09:14:00Z"
+ "published": "2026-10-25T09:49:46Z"
 }
