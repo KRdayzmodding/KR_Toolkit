@@ -501,6 +501,8 @@ class MainWindow(ToolWindow):
     def _fit_list(self) -> None:
         """Окно стало меньше, чем нужно списку и журналу, — ужать список."""
         lay = self.layout()
+        if lay is None or getattr(self, "drop", None) is None:
+            return          # окно ещё не собрано: рамка шлёт resize из конструктора (багрепорт 25.10.2026)
         deficit = lay.minimumSize().height() - self.height()
         if deficit > 0 and self.drop.height() > LIST_MIN:
             self.drop.setFixedHeight(max(LIST_MIN, self.drop.height() - deficit))
@@ -907,7 +909,7 @@ class MainWindow(ToolWindow):
     def changeEvent(self, event) -> None:
         super().changeEvent(event)
         # вернулся после правок в редакторе — освежить «есть что паковать»
-        if event.type() == QEvent.ActivationChange and self.isActiveWindow() \
+        if event.type() == QEvent.ActivationChange and hasattr(self, "table") and self.isActiveWindow() \
                 and time.monotonic() - self._planned_at > 5 and not self._busy():
             QTimer.singleShot(0, self._refresh_states)
 

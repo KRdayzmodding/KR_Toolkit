@@ -27,6 +27,16 @@
      ],
      "manifest": "manifests/ProjectBuilder/0.1.0.json",
      "sha256": "86361e921ac6c462e8e238e614aef40966291525a7815b024834a1384df57ec3"
+    },
+    {
+     "version": "0.1.1",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "Окно больше не падает при запуске на некоторых системах (ошибка «'NoneType' object has no attribute 'minimumSize'»)."
+     ],
+     "manifest": "manifests/ProjectBuilder/0.1.1.json",
+     "sha256": "eb70b3f6bc7d433b0da7a715b19c095923d66aaf4866325bf8c8daefbe07f286"
     }
    ],
    "title": "[KR] Project Builder"
@@ -82,6 +92,16 @@
      ],
      "manifest": "manifests/ImagesetEditor/0.1.0.json",
      "sha256": "6d9c81299accdd942ef78fba9c273c8320e6865695f7a682f3145d41eb89a51e"
+    },
+    {
+     "version": "0.1.1",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "Окно больше не падает при запуске на некоторых системах."
+     ],
+     "manifest": "manifests/ImagesetEditor/0.1.1.json",
+     "sha256": "08308b10010ff46cef7c628f14a27b4cea062a268f8bb52c60e24704b0d78b76"
     }
    ],
    "title": "[KR] Imageset Editor"
@@ -177,5 +197,5 @@
    "title": "[KR] ANM Converter"
   }
  },
- "published": "2026-10-25T09:49:46Z"
+ "published": "2026-10-25T11:11:27Z"
 }

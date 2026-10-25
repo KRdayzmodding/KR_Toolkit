@@ -265,7 +265,8 @@ class ImagesetWindow(ToolWindow):
 
     def changeEvent(self, event) -> None:
         # потеря фокуса окном — сохранить всё, как VSCode с autoSave onFocusChange
-        if event.type() == QEvent.ActivationChange and not self.isActiveWindow():
+        # окно ещё не собрано — сохранять нечего (рамка шлёт события из конструктора, багрепорт 25.10.2026)
+        if event.type() == QEvent.ActivationChange and hasattr(self, "docs") and not self.isActiveWindow():
             self.save_all()
         super().changeEvent(event)
 
