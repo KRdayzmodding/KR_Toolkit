@@ -79,6 +79,7 @@ TEXT = {
     "versions.rollback": "Откатиться на %s",
     "versions.all": "Обновить всё — %d, %s",
     "versions.all.none": "Всё обновлено",
+    "versions.check_now": "Проверить сейчас",
     "versions.downloading": "Скачивание: %s %s",
     "versions.done": "%s %s поставлен",
     "versions.done.pinned": "%s %s поставлен — выбран вручную, при запуске будет предупреждение",

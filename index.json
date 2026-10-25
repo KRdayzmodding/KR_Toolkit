@@ -12,6 +12,17 @@
      ],
      "manifest": "manifests/DevToolkit/0.1.0.json",
      "sha256": "5f67c78c809906b4ba664bac0c4434d631dc30cabead381af67ac6fd5d8183a9"
+    },
+    {
+     "version": "0.1.1",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "Новые версии видны сразу: проверка обновлений при каждом запуске, а не раз в 6 часов.",
+      "Кнопка «Проверить сейчас» на вкладке «Версии»."
+     ],
+     "manifest": "manifests/DevToolkit/0.1.1.json",
+     "sha256": "ffa5532b7caa7c55695f4e7ed2541c8e62f9124830983e3690aca0b771f1edcf"
     }
    ],
    "title": "[KR] Dev Toolkit"
@@ -197,5 +208,5 @@
    "title": "[KR] ANM Converter"
   }
  },
- "published": "2026-10-25T11:11:27Z"
+ "published": "2026-10-25T11:26:41Z"
 }

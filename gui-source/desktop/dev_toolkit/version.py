@@ -9,4 +9,4 @@
 [KR] Dev Toolkit показывает её на карточке.
 """
 NAME = "[KR] Dev Toolkit"
-VERSION = "0.1.0"
+VERSION = "0.1.1"

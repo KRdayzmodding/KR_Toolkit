@@ -102,6 +102,10 @@ class VersionsPage(QWidget):
         self.install.clicked.connect(self._install)
         foot.addWidget(self.install)
         foot.addStretch(1)
+        # в сеть сейчас, а не по расписанию — новая версия видна сразу после выпуска
+        self.check_now = PushButton(T("versions.check_now"), self)
+        self.check_now.clicked.connect(lambda: self.refresh(force=True))
+        foot.addWidget(self.check_now)
         self.all = PrimaryPushButton("", self)
         self.all.clicked.connect(self._update_all)
         foot.addWidget(self.all)
