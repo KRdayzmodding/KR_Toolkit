@@ -1,0 +1,171 @@
+{
+ "format": 1,
+ "tools": {
+  "DevToolkit": {
+   "versions": [
+    {
+     "version": "0.1.0",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "Первый выпуск с обновлениями. Лаунчер: все тулзы, меню проводника, вкладка «Версии» с обновлениями."
+     ],
+     "manifest": "manifests/DevToolkit/0.1.0.json",
+     "sha256": "5f67c78c809906b4ba664bac0c4434d631dc30cabead381af67ac6fd5d8183a9"
+    }
+   ],
+   "title": "[KR] Dev Toolkit"
+  },
+  "ProjectBuilder": {
+   "versions": [
+    {
+     "version": "0.1.0",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "Первый выпуск с обновлениями. Сборка мода в PBO с проверками, исправлениями и подписью."
+     ],
+     "manifest": "manifests/ProjectBuilder/0.1.0.json",
+     "sha256": "86361e921ac6c462e8e238e614aef40966291525a7815b024834a1384df57ec3"
+    }
+   ],
+   "title": "[KR] Project Builder"
+  },
+  "AddonSigner": {
+   "versions": [
+    {
+     "version": "0.1.0",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "Первый выпуск с обновлениями. Ключи и подписи для PBO."
+     ],
+     "manifest": "manifests/AddonSigner/0.1.0.json",
+     "sha256": "d5205999bb89ea43db588d8541c4eaa43c0ab86f16b41cb9692a3144fda50597"
+    }
+   ],
+   "title": "[KR] Addon Signer"
+  },
+  "SoundConverter": {
+   "versions": [
+    {
+     "version": "0.1.0",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "Первый выпуск с обновлениями. WAV → OGG как у ванили."
+     ],
+     "manifest": "manifests/SoundConverter/0.1.0.json",
+     "sha256": "b3479dc120b480fe2481a7d3548ae93629257a453bd393d04e8798ef60ddbea5"
+    }
+   ],
+   "title": "[KR] Sound Converter"
+  },
+  "ImagesetEditor": {
+   "versions": [
+    {
+     "version": "0.1.0",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "Первый выпуск с обновлениями. Правка .imageset, атласы, EDDS."
+     ],
+     "manifest": "manifests/ImagesetEditor/0.1.0.json",
+     "sha256": "6d9c81299accdd942ef78fba9c273c8320e6865695f7a682f3145d41eb89a51e"
+    }
+   ],
+   "title": "[KR] Imageset Editor"
+  },
+  "TextureEditor": {
+   "versions": [
+    {
+     "version": "0.1.0",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "Первый выпуск с обновлениями. Просмотр текстур, SMDI, размер, Френель."
+     ],
+     "manifest": "manifests/TextureEditor/0.1.0.json",
+     "sha256": "7a41d0fb39bcf77c411e087d4917ee55e28483a76c4686683ce01992bb3cbd72"
+    }
+   ],
+   "title": "[KR] Texture Editor"
+  },
+  "TextureConverter": {
+   "versions": [
+    {
+     "version": "0.1.0",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "Первый выпуск с обновлениями. Картинки ⇄ PAA/EDDS пачкой."
+     ],
+     "manifest": "manifests/TextureConverter/0.1.0.json",
+     "sha256": "dc0d82dc9bdf13037b823f5d9026f46502ea6f94570e90ea8a77b4187a2b4d15"
+    }
+   ],
+   "title": "[KR] Texture Converter"
+  },
+  "ModelConverter": {
+   "versions": [
+    {
+     "version": "0.1.0",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "Первый выпуск с обновлениями. ODOL → MLOD с model.cfg."
+     ],
+     "manifest": "manifests/ModelConverter/0.1.0.json",
+     "sha256": "838eb46703d63baf696b3a8adeedb7e21805ae91a3ae84f5284ec3f5ff38b105"
+    }
+   ],
+   "title": "[KR] Model Converter"
+  },
+  "DeBinarizer": {
+   "versions": [
+    {
+     "version": "0.1.0",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "Первый выпуск с обновлениями. Бинарные конфиги → текст."
+     ],
+     "manifest": "manifests/DeBinarizer/0.1.0.json",
+     "sha256": "258e165bdd43be355cf8fab2a6928c7748c3dd5872662dded3d25da07f53208e"
+    }
+   ],
+   "title": "[KR] DeBinarizer"
+  },
+  "PboUnpacker": {
+   "versions": [
+    {
+     "version": "0.1.0",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "Первый выпуск с обновлениями. PBO целиком до исходника."
+     ],
+     "manifest": "manifests/PboUnpacker/0.1.0.json",
+     "sha256": "eb1558da217a256fd2eced919d975fcf9c374e2411b5155de47c36509652b287"
+    }
+   ],
+   "title": "[KR] PBO Unpacker"
+  },
+  "AnmConverter": {
+   "versions": [
+    {
+     "version": "0.1.0",
+     "channel": "test",
+     "date": "2026-10-25",
+     "changes": [
+      "Первый выпуск с обновлениями. ANM ⇄ TXA без потерь."
+     ],
+     "manifest": "manifests/AnmConverter/0.1.0.json",
+     "sha256": "3ea2bf0a195a1d876884113381832273623a5b9f63c7dbc9b68f538c050d5cff"
+    }
+   ],
+   "title": "[KR] ANM Converter"
+  }
+ },
+ "published": "2026-10-25T09:14:00Z"
+}

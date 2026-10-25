@@ -1,0 +1,100 @@
+# -*- coding: utf-8 -*-
+"""Все строки лаунчера — в одном месте (свод правил интерфейсов, п. 60)."""
+from __future__ import annotations
+
+from version import NAME as _NAME, VERSION as _VERSION
+
+TEXT = {
+    "app.title": "%s %s" % (_NAME, _VERSION),
+    "page.tools": "Приложения",
+    "page.shell": "Настройки",
+    "group.edit": "Сборка и редакторы",
+    "group.batch": "Массовая работа с файлами",
+
+    "tool.build": "[KR] Project Builder",
+    "tool.build.desc": "Запаковка PBO",
+    "tool.sign": "[KR] Addon Signer",
+    "tool.sign.desc": "Создание ключей и подпись PBO",
+    "tool.textures": "[KR] Texture Editor",
+    "tool.textures.desc": "Редактирование текстур",
+    "tool.sound": "[KR] Sound Converter",
+    "tool.sound.desc": "Конвертация в OGG",
+    "tool.imageset": "[KR] Imageset Editor",
+    "tool.imageset.desc": "Атласы иконок интерфейса: просмотр и правка",
+    "tool.texconv": "[KR] Texture Converter",
+    "tool.texconv.desc": "Конвертация текстур",
+    "tool.models": "[KR] Model Converter",
+    "tool.models.desc": "ODOL → MLOD",
+    "tool.debin": "[KR] DeBinarizer",
+    "tool.debin.desc": "config.bin, .rvmat и другие бинарные файлы → текст",
+    "tool.pbo": "[KR] PBO Unpacker",
+    "tool.pbo.desc": "Распаковка PBO",
+    "tool.anm": "[KR] ANM Converter",
+    "tool.anm.desc": "Конвертация ANM/TXA",
+
+    "shell.head": "Пункты в меню по правому клику",
+    "shell.pbo": "PBO — распаковать целиком",
+    "shell.pbo.desc": "В папку рядом: конфиги текстом, модели редактируемые",
+    "shell.p3d": "P3D — в MLOD",
+    "shell.p3d.desc": "Модель становится редактируемой, model.cfg рядом создаётся или дополняется",
+    "shell.bin": "BIN — разбинарить",
+    "shell.bin.desc": "config.bin → config.cpp рядом",
+    "shell.how": "Как работают пункты",
+    "shell.delete": "Удалять исходник",
+    "shell.delete.desc": "После того как результат записан",
+    "shell.suffix": "Суффикс MLOD",
+    "shell.suffix.desc": "x.p3d → x_mlod.p3d рядом. Пусто — на место исходника, а исходник в папку backup",
+    "shell.suffix.locked": "Исходник удаляется — MLOD ложится на его место",
+    "shell.layout": "Раскладка PBO",
+    "shell.layout.desc": "По префиксу — папки как в игре; в папку PBO — всё в одну папку",
+    "layout.prefix": "По префиксу",
+    "layout.flat": "В папку PBO",
+    "shell.missing": "Не собрано: нет {path}",
+    "shell.refreshed": "Пункты меню переписаны под {path}: {names}",
+    "shell.failed": "Реестр не записан: {text}",
+    "switch.on": "Да",
+    "switch.off": "Нет",
+
+    "page.versions": "Версии",
+    "versions.channel": "Канал обновлений",
+    "versions.main": "Основной",
+    "versions.test": "Тестовый",
+    "versions.main.note": "Проверенные версии",
+    "versions.test.note": "Свежие сборки до проверки — могут работать с ошибками",
+    "versions.not_installed": "Обновления и выбор версий работают в тулките, поставленном установщиком. "
+                              "Эта копия запущена из папки сборки.",
+    "versions.col.tool": "Тулза",
+    "versions.col.installed": "Стоит",
+    "versions.col.state": "Состояние",
+    "versions.state.newer": "есть %s",
+    "versions.state.pinned": "выбрана вручную · есть %s",
+    "versions.state.below": "ниже поддерживаемой %s",
+    "versions.state.current": "актуальна",
+    "versions.of": "Версия %s",
+    "versions.mark.installed": "стоит",
+    "versions.mark.latest": "последняя",
+    "versions.mark.test": "тест",
+    "versions.installed": "Стоит %s",
+    "versions.install": "Установить %s",
+    "versions.rollback": "Откатиться на %s",
+    "versions.all": "Обновить всё — %d, %s",
+    "versions.all.none": "Всё обновлено",
+    "versions.downloading": "Скачивание: %s %s",
+    "versions.done": "%s %s поставлен",
+    "versions.done.pinned": "%s %s поставлен — выбран вручную, при запуске будет предупреждение",
+    "versions.failed": "Не поставлено: %s",
+    "version.outdated": "%s · устарела",
+    "version.newer": "%s → %s",
+
+    "tool.missing": "Не собрано: нет {path}",
+    "tool.failed": "Не запустилось: {name} — {text}",
+    "version.none": "без версии",
+    "version.none.tip": "Рядом с exe нет version.json — сборка старше системы версий",
+    "version.tip": "Коммит {commit}, сборка {built}",
+}
+
+
+def T(key: str, **kw) -> str:
+    """Текст по ключу. Неизвестный ключ — сам ключ: видно и ищется, а не падает."""
+    text = TEXT.get(key, key)
+    return text.format(**kw) if kw else text
