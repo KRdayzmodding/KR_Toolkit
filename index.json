@@ -30,7 +30,7 @@
     },
     {
      "version": "0.1.1",
-     "channel": "test",
+     "channel": "main",
      "date": "2026-10-25",
      "changes": [
       "Окно больше не падает при запуске на некоторых системах (ошибка «'NoneType' object has no attribute 'minimumSize'»)."
@@ -95,7 +95,7 @@
     },
     {
      "version": "0.1.1",
-     "channel": "test",
+     "channel": "main",
      "date": "2026-10-25",
      "changes": [
       "Окно больше не падает при запуске на некоторых системах."
