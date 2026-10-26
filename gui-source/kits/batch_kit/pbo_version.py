@@ -5,4 +5,4 @@ r"""Название и версия тулзы — одно место для �
 её в runtime\versions.json, [KR] Dev Toolkit показывает на карточке.
 """
 NAME = "PBO Unpacker"
-VERSION = "0.1.1"
+VERSION = "0.1.2"

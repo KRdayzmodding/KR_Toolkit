@@ -85,6 +85,16 @@
      ],
      "manifest": "manifests/ProjectBuilder/0.1.3.json",
      "sha256": "1c6b9fe271045ee93cec3ed2056299ec132ed1d7fc3147f88bd72d13a3297e9a"
+    },
+    {
+     "version": "0.1.4",
+     "channel": "test",
+     "date": "2026-10-26",
+     "changes": [
+      "Подпись PBO теперь всегда совпадает с ванильной (DSSignFile). Раньше на PBO после обфускаторов и некоторых упаковщиков она расходилась, и сервер выкидывал игрока с «Клиентский PBO не является частью сервера». Такие PBO стоит переподписать."
+     ],
+     "manifest": "manifests/ProjectBuilder/0.1.4.json",
+     "sha256": "e8b27cdbef94e4498e5420fd1717135a9f0d1fb2cced94bd12f6f76772e8026c"
     }
    ],
    "title": "Project Builder"
@@ -122,6 +132,17 @@
      ],
      "manifest": "manifests/AddonSigner/0.1.2.json",
      "sha256": "100bf1ed9c797a35fe773d4b80e34c1f90629f4262a3c88c6ba0cefecf645564"
+    },
+    {
+     "version": "0.1.3",
+     "channel": "test",
+     "date": "2026-10-26",
+     "changes": [
+      "Подпись PBO теперь всегда совпадает с ванильной (DSSignFile). Раньше на PBO после обфускаторов и некоторых упаковщиков она расходилась, и сервер выкидывал игрока с «Клиентский PBO не является частью сервера». Такие PBO стоит переподписать.",
+      "PBO, у которых в заголовке длинный текст (баннер обфускатора), читаются правильно: раньше их содержимое разбиралось со сдвигом."
+     ],
+     "manifest": "manifests/AddonSigner/0.1.3.json",
+     "sha256": "aa0fdf5be27f8be3b4de7aa8038076ec071437c0968f4f427478f72bcf93adf5"
     }
    ],
    "title": "Addon Signer"
@@ -300,6 +321,16 @@
      ],
      "manifest": "manifests/DeBinarizer/0.1.1.json",
      "sha256": "96be8202b419107f1e54ce91caa40c5abdada2dadc77c54173cb34168421be60"
+    },
+    {
+     "version": "0.1.2",
+     "channel": "test",
+     "date": "2026-10-26",
+     "changes": [
+      "PBO, у которых в заголовке длинный текст (баннер обфускатора), читаются правильно: раньше их содержимое разбиралось со сдвигом."
+     ],
+     "manifest": "manifests/DeBinarizer/0.1.2.json",
+     "sha256": "3b6cb926715cce50decef697365dc033f4e54f58aebcea2243369092fa9da6b9"
     }
    ],
    "title": "DeBinarizer"
@@ -327,6 +358,16 @@
      ],
      "manifest": "manifests/PboUnpacker/0.1.1.json",
      "sha256": "f61ec93c2fa40d02b2356003310aa100e2b64d96449367d02eb40eb99363c23d"
+    },
+    {
+     "version": "0.1.2",
+     "channel": "test",
+     "date": "2026-10-26",
+     "changes": [
+      "PBO, у которых в заголовке длинный текст (баннер обфускатора), читаются правильно: раньше их содержимое разбиралось со сдвигом."
+     ],
+     "manifest": "manifests/PboUnpacker/0.1.2.json",
+     "sha256": "0f47ed8a824bc9bae26516f3405a0217f7e5ba5648bcb87036f58b79f6ba0419"
     }
    ],
    "title": "PBO Unpacker"
@@ -358,5 +399,5 @@
    "title": "ANM Converter"
   }
  },
- "published": "2026-10-26T15:28:18Z"
+ "published": "2026-10-26T16:46:06Z"
 }
