@@ -136,6 +136,16 @@
      ],
      "manifest": "manifests/ProjectBuilder/0.1.6.json",
      "sha256": "8c3d16e2770ac56b1bc26163134b94ffa128410bc6101580c75fb087c74d96cf"
+    },
+    {
+     "version": "0.1.7",
+     "channel": "main",
+     "date": "2026-10-28",
+     "changes": [
+      "Уровни на вкладке «Проверки» снова сохраняются: щелчок по уровню давал «Не сохранено: … = True — ждём error, warning, info или off». Настройки, сохранённые раньше, не пострадали."
+     ],
+     "manifest": "manifests/ProjectBuilder/0.1.7.json",
+     "sha256": "2bcae58e37d9d64f0c3c5311937e98e44ffd9150b1aec794593c88398adac2c5"
     }
    ],
    "title": "Project Builder"
@@ -537,5 +547,5 @@
    "title": "ANM Converter"
   }
  },
- "published": "2026-10-27T21:53:01Z"
+ "published": "2026-10-27T22:50:27Z"
 }

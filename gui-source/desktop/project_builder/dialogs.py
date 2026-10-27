@@ -294,7 +294,8 @@ class SettingsDialog(ThemedDialog):
                                 (pb.WARNING, T("checks.warning")),
                                 (pb.INFO, T("checks.info")),
                                 (pb.OFF, T("checks.off"))):
-                control.addItem(value, text, lambda v=value, c=kind.code: self._set_level(c, v))
+                # *_: щелчок передаёт checked — без него v становилось True (багрепорт 28.10.2026)
+                control.addItem(value, text, lambda *_, v=value, c=kind.code: self._set_level(c, v))
             control.setCurrentItem(levels.get(kind.code, kind.default))
             self.level_controls[kind.code] = control
             row = setting_row(kind.title, self._kind_desc(kind, levels), control)
