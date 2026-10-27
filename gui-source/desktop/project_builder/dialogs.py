@@ -140,7 +140,13 @@ class SettingsDialog(ThemedDialog):
         self.odol.addItem("55", T("settings.odol.55"), lambda: self._save("odol_version", 55))
         self.odol.addItem("56", T("settings.odol.56"), lambda: self._save("odol_version", 56))
         self.odol.setCurrentItem(str(values.get("odol_version", 56)))
-        self._add_row(root, setting_row(T("settings.odol"), T("settings.odol.desc"), self.odol))
+        self.odol_row = setting_row(T("settings.odol"), T("settings.odol.desc"), self.odol)
+        self._add_row(root, self.odol_row)
+        # «Бинаризировать модели» — в главном окне; без бинаризации версия ODOL ни на
+        # что не влияет: строка видна, но не нажимается, и сказано почему
+        if not values.get("binarize_models", True):
+            self.odol.setEnabled(False)
+            self.odol_row.desc_label.setText(T("settings.odol.off"))
 
         self.jobs = CompactSpinBox(self)
         self.jobs.setRange(0, 128)
@@ -221,7 +227,7 @@ class SettingsDialog(ThemedDialog):
         bottom.addWidget(close)
         outer.addLayout(bottom)
         self.error.setVisible(False)
-        # шире обычного: слева список групп проверок, справа строки с уровнем
+        # шире обычного: у строк проверок и исправлений сегмент на четыре варианта
         self.resize(*tokens.WIN_XL)
 
     def _page(self):
@@ -246,17 +252,18 @@ class SettingsDialog(ThemedDialog):
 
     # ------------------------------------------------------------------ проверки
     def _build_checks(self, root, levels: Dict[str, str]) -> None:
-        """Слева — все группы сразу с числом проверок, справа — проверки группы.
+        """Строка — вид проблем, уровень — сегментом; разделы, как у исправлений.
 
-        Одним длинным списком 41 строка пряталась под прокруткой: на экране
-        пять, остальные заметить невозможно (замечание юзера 22.10.2026). Список
-        групп показывает всё целиком, и в группе не больше дюжины строк.
-        Закреплённые проверки — только для чтения, с причиной (п. 53).
+        До 27.10.2026 здесь была 61 проверка по типам файлов, и одна беда («нет
+        файла по пути») шла где ошибкой, где предупреждением. Виды сведены по
+        сути (что сломано, что будет в игре, где чинить) — их полтора десятка,
+        и список групп слева больше не нужен. Код отдельной проверки, заданный
+        в файле настроек, виден в описании вида (п. 9: без скрытого состояния).
         """
         head = QHBoxLayout()
         note = shrink(CaptionLabel(T("checks.note"), self))
         head.addWidget(note, 1)
-        # одна кнопка на все проверки разом; «по умолчанию» — один из её пунктов
+        # одна кнопка на все виды разом; «по умолчанию» — один из её пунктов
         self.all_btn = DropDownPushButton(T("checks.all"), self)
         menu = RoundMenu(parent=self.all_btn)
         for value, label in ((None, T("checks.all.default")),
@@ -270,55 +277,44 @@ class SettingsDialog(ThemedDialog):
         head.addWidget(self.all_btn)
         root.addLayout(head)
 
-        body = QHBoxLayout()
-        body.setSpacing(tokens.SPACE_M)
-        root.addLayout(body, 1)
-        self.group_list = ListWidget(self)
-        self.group_list.setFixedWidth(260)
-        body.addWidget(self.group_list)
-        self.group_pages = QStackedWidget(self)
-        body.addWidget(self.group_pages, 1)
-
+        scroll, page = self._page()
+        root.addWidget(scroll, 1)
         self.level_controls: Dict[str, SegmentedWidget] = {}
-        self.groups: List[str] = []
-        pages: Dict[str, QVBoxLayout] = {}
-        for check in self.catalog.checks:
-            if check.group not in pages:
-                scroll, page_root = self._page()
-                self.group_pages.addWidget(scroll)
-                pages[check.group] = page_root
-                self.groups.append(check.group)
-            if check.locked:
-                control = CaptionLabel(T("checks.locked"), self)
-                control.setTextColor(tokens.color("text_dim"), tokens.color("text_dim"))
-            else:
-                control = SegmentedWidget(self)
-                for value, label in ((pb.ERROR, T("checks.error")),
-                                     (pb.WARNING, T("checks.warning")),
-                                     (pb.INFO, T("checks.info")),
-                                     (pb.OFF, T("checks.off"))):
-                    control.addItem(value, label,
-                                    lambda v=value, c=check.code: self._set_level(c, v))
-                control.setCurrentItem(levels.get(check.code, check.default))
-                self.level_controls[check.code] = control
-            pages[check.group].addWidget(setting_row(check.title, check.desc, control))
-        for page_root in pages.values():
-            page_root.addStretch(1)
-        for _ in self.groups:
-            self.group_list.addItem("")
-        self._label_groups(levels)
-        self.group_list.currentRowChanged.connect(self.group_pages.setCurrentIndex)
-        self.group_list.setCurrentRow(0)
+        self.level_rows: Dict[str, QWidget] = {}
+        section = None
+        for kind in self.catalog.checks:
+            if kind.group != section:
+                section = kind.group
+                label = StrongBodyLabel(section, self)
+                label.setContentsMargins(0, tokens.SPACE_M, 0, tokens.SPACE_XS)
+                page.addWidget(label)
+            control = SegmentedWidget(self)
+            for value, text in ((pb.ERROR, T("checks.error")),
+                                (pb.WARNING, T("checks.warning")),
+                                (pb.INFO, T("checks.info")),
+                                (pb.OFF, T("checks.off"))):
+                control.addItem(value, text, lambda v=value, c=kind.code: self._set_level(c, v))
+            control.setCurrentItem(levels.get(kind.code, kind.default))
+            self.level_controls[kind.code] = control
+            row = setting_row(kind.title, self._kind_desc(kind, levels), control)
+            self.level_rows[kind.code] = row
+            page.addWidget(row)
+        page.addStretch(1)
 
-    def _label_groups(self, levels: Dict[str, str]) -> None:
-        """Подпись группы — с числом проверок и итогом: сколько изменено (п. 18)."""
-        for row, group in enumerate(self.groups):
-            codes = [c for c in self.catalog.checks if c.group == group]
-            changed = sum(1 for c in codes if c.code in levels and levels[c.code] != c.default)
-            text = T("checks.group", group=group, count=len(codes))
-            if changed:
-                text += T("checks.group.changed", count=changed)
-            self.group_list.item(row).setText(text)
+    def _kind_desc(self, kind, levels: Dict[str, str]) -> str:
+        """Описание вида — с тем, что уровень вида меняет не всё: закреплённое и заданное отдельно."""
+        text = kind.desc
+        if kind.locked_codes:
+            text += ". " + T("checks.locked_part")
+        own = [code for code in kind.codes if code in levels]
+        if own:
+            text += ". " + T("checks.own", codes=", ".join(own))
+        return text
+
+    def _refresh_kinds(self, levels: Dict[str, str]) -> None:
+        for kind in self.catalog.checks:
+            self.level_controls[kind.code].setCurrentItem(levels.get(kind.code, kind.default))
+            self.level_rows[kind.code].desc_label.setText(self._kind_desc(kind, levels))
 
     # ------------------------------------------------------------------ исправления
     def _build_fixes(self, root, chosen: Dict[str, str]) -> None:
@@ -367,13 +363,17 @@ class SettingsDialog(ThemedDialog):
         self._save("fixes", chosen)
 
     def _set_level(self, code: str, value: str) -> None:
-        levels = dict(read_global_settings(self.settings_file).get("levels") or {})
-        if value == self.catalog.check_by_code[code].default:
+        """Уровень вида; заданные в файле уровни его отдельных проверок снимаются —
+        иначе выбор в окне на них бы не действовал, а этого не видно."""
+        kind = self.catalog.check_by_code[code]
+        levels = {key: v for key, v in (read_global_settings(self.settings_file).get("levels") or {}).items()
+                  if key not in kind.codes}
+        if value == kind.default:
             levels.pop(code, None)              # в файле — только отличия от реестра
         else:
             levels[code] = value
         self._save("levels", levels)
-        self._label_groups(read_global_settings(self.settings_file).get("levels") or {})
+        self._refresh_kinds(read_global_settings(self.settings_file).get("levels") or {})
 
     def _ask_apply_all(self, value: Optional[str], label: str) -> None:
         """Перед заменой всех уровней — подтверждение: отменить её нечем (п. 56)."""
@@ -384,15 +384,12 @@ class SettingsDialog(ThemedDialog):
             self.apply_all(value)
 
     def apply_all(self, value: Optional[str]) -> None:
-        """Все незакреплённые проверки — одним уровнем; None — уровни реестра."""
+        """Все виды — одним уровнем; None — уровни по умолчанию. Отдельные коды снимаются."""
         levels = {}
         if value is not None:
-            levels = {c.code: value for c in self.catalog.checks
-                      if not c.locked and c.default != value}
+            levels = {k.code: value for k in self.catalog.checks if k.default != value}
         self._save("levels", levels)
-        for code, control in self.level_controls.items():
-            control.setCurrentItem(levels.get(code, self.catalog.check_by_code[code].default))
-        self._label_groups(levels)
+        self._refresh_kinds(levels)
 
     def _set_theme(self, name: str) -> None:
         self.store.window["theme"] = name

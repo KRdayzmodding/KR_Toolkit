@@ -71,12 +71,16 @@ def _settings_args(settings_file: Optional[Path]) -> List[str]:
 # ====================================================================== каталог
 @dataclass(frozen=True)
 class CheckInfo:
+    """Вид проблем (27.10.2026): уровень задаётся ему, а не каждой проверке."""
     code: str
     group: str
     title: str
     desc: str
     default: str
     locked: bool = False
+    #: коды проверок вида и те из них, что всегда ошибка
+    codes: Tuple[str, ...] = ()
+    locked_codes: Tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -124,7 +128,9 @@ def catalog(settings_file: Optional[Path] = None) -> Catalog:
             cat.defaults, cat.files = dict(ev.get("values") or {}), dict(ev.get("files") or {})
         elif kind == "check":
             cat.checks.append(CheckInfo(ev["code"], ev["group"], ev["title"], ev.get("desc", ""),
-                                        ev["default"], bool(ev.get("locked"))))
+                                        ev["default"], bool(ev.get("locked")),
+                                        tuple(ev.get("codes") or ()),
+                                        tuple(ev.get("locked_codes") or ())))
         elif kind == "fix":
             cat.fixes.append(FixInfo(ev["code"], ev["group"], ev["title"], ev.get("desc", ""),
                                      tuple(tuple(o) for o in ev.get("options", [])), ev["default"],

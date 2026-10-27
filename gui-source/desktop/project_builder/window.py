@@ -25,8 +25,8 @@ from typing import Dict, List, Optional
 from PySide6.QtCore import QEvent, Qt, QTimer
 from PySide6.QtGui import QColor, QKeySequence, QShortcut
 from PySide6.QtWidgets import (
-    QAbstractItemView, QFileDialog, QHBoxLayout, QHeaderView, QStackedWidget, QTableWidgetItem,
-    QVBoxLayout, QWidget)
+    QAbstractItemView, QFileDialog, QGridLayout, QHBoxLayout, QHeaderView, QStackedWidget,
+    QTableWidgetItem, QVBoxLayout, QWidget)
 from qfluentwidgets import (
     Action, BodyLabel, CaptionLabel, CheckBox, ComboBox, FluentIcon, LineEdit, MessageBox,
     PlainTextEdit, PrimaryPushButton, ProgressBar, PushButton, RoundMenu, StrongBodyLabel,
@@ -39,9 +39,9 @@ from qts_ui.packing_log import FAIL, OK, PACKING
 from qts_ui.resizer import Resizer
 from qts_ui.rows import shrink
 from qts_ui.frame import ToolWindow
-from store import SCRATCH, BuildSet, Entry, Store, addons_dir
+from store import SCRATCH, BuildSet, Entry, Store, addons_dir, read_global_settings, write_global_settings
 from texts import T
-from worker import BuildWorker, Result, settings_path
+from worker import BuildWorker, Result, check_settings, settings_path
 
 COL_PBO, COL_WHERE, COL_STATE = range(3)
 #: начальная ширина колонки «Куда»: «по умолчанию» целиком, путь — с многоточием
@@ -238,9 +238,36 @@ class MainWindow(ToolWindow):
         where.addWidget(self.where_btn)
         root.addLayout(where)
 
-        # --- главная опция
-        self.full = CheckBox(T("opt.full"), self)
-        root.addWidget(self.full)
+        # --- опции запаковки (юзер 27.10.2026: бинаризация и «не останавливаться на
+        # ошибках» — здесь, а не в настройках, как в главном окне pboProject).
+        # «Использовать temp» — на этот запуск (выключенная навсегда замедлила бы
+        # каждую сборку); остальные три — общие настройки сборки
+        # (project_builder.json): их видят и командная строка, и QTS.
+        values = read_global_settings(self.settings_file)
+        options = QGridLayout()
+        options.setHorizontalSpacing(tokens.SPACE_L)
+        options.setVerticalSpacing(tokens.SPACE_XS)
+        self.binarize = CheckBox(T("opt.binarize"), self)
+        self.binarize.setToolTip(T("opt.binarize.tip"))
+        self.binarize.setChecked(bool(values.get("binarize_models", True)))
+        self.binarize.toggled.connect(lambda on: self._save_option("binarize_models", on))
+        options.addWidget(self.binarize, 0, 0)
+        self.rapify = CheckBox(T("opt.rapify"), self)
+        self.rapify.setToolTip(T("opt.rapify.tip"))
+        self.rapify.setChecked(bool(values.get("rapify", True)))
+        self.rapify.toggled.connect(lambda on: self._save_option("rapify", on))
+        options.addWidget(self.rapify, 0, 1)
+        self.use_temp = CheckBox(T("opt.temp"), self)
+        self.use_temp.setToolTip(T("opt.temp.tip"))
+        self.use_temp.setChecked(True)
+        options.addWidget(self.use_temp, 1, 0)
+        self.force = CheckBox(T("opt.force"), self)
+        self.force.setToolTip(T("opt.force.tip"))
+        self.force.setChecked(bool(values.get("ignore_errors", False)))
+        self.force.toggled.connect(lambda on: self._save_option("ignore_errors", on))
+        options.addWidget(self.force, 1, 1)
+        options.setColumnStretch(2, 1)
+        root.addLayout(options)
 
         # --- журнал: таблица хода запаковки и итог (как в QTS)
         self.journal = LinkText(self)
@@ -472,7 +499,8 @@ class MainWindow(ToolWindow):
         # настройки меняют уровни и temp под идущей сборкой — пока она идёт, закрыты;
         # тихая сверка «есть что паковать» короткая и не держит кнопку
         self.settings_btn.setEnabled(not (busy and not self._quiet))
-        for w in (self.add_btn, self.pick_btn, self.where, self.where_btn, self.full, self.all_btn):
+        for w in (self.add_btn, self.pick_btn, self.where, self.where_btn, self.use_temp, self.all_btn,
+                  self.binarize, self.rapify, self.force):
             w.setEnabled(not busy)
         self.drop.setAcceptDrops(not busy)
         self.rename_btn.setEnabled(named and not busy)
@@ -715,7 +743,7 @@ class MainWindow(ToolWindow):
         self.packing.start([current.entries[r].pbo_name() for r in rows])
         for row in rows:
             self._set_state(row, T("state.queued"), "text_dim")
-        self._run(BuildWorker(self._jobs(rows), full=self.full.isChecked(),
+        self._run(BuildWorker(self._jobs(rows), full=not self.use_temp.isChecked(),
                               settings_file=self.settings_file, parent=self), quiet=False, total=len(rows))
 
     def _refresh_states(self) -> None:
@@ -810,10 +838,19 @@ class MainWindow(ToolWindow):
             self._journal_errors([(None, error)])
             return
         warnings, errors = len(report.warnings), len(report.errors)
-        if errors:
+        if errors and not report.ok:
             self._done["bad"] += 1
             self._set_state(row, T("state.failed", count=errors), "error", link="error")
             self.packing.set_status(name, FAIL, ms, warnings, errors)
+            self._journal_errors([(Path(report.source) / src, text) for src, text in report.errors])
+        elif errors:
+            # «игнорировать ошибки»: PBO собран, ошибки — в журнале и в логах
+            self._done["ok"] += 1
+            stamp = time.strftime("%H:%M")
+            if report.packed:
+                self.packed_at[name] = (stamp, "error")
+            self._set_state(row, T("state.forced", count=errors, time=stamp), "error", link="error")
+            self.packing.set_status(name, OK, ms, warnings, errors)
             self._journal_errors([(Path(report.source) / src, text) for src, text in report.errors])
         else:
             self._done["ok"] += 1
@@ -836,7 +873,7 @@ class MainWindow(ToolWindow):
         if report is None:
             self._set_state(row, T("state.error") if error else T("state.unknown"),
                             "error" if error else "text_dim")
-        elif report.errors:
+        elif report.errors and not report.ok:
             self._set_state(row, T("state.failed", count=len(report.errors)), "error")
         elif not report.changed:
             packed = self.packed_at.get(self._name(row))
@@ -874,9 +911,28 @@ class MainWindow(ToolWindow):
             self.journal.appendHtml("".join(body))
         self._sync()
 
+    def _save_option(self, key: str, on: bool) -> None:
+        """Опция главного окна — общая настройка сборки: пишется сразу, как в окне настроек."""
+        values = read_global_settings(self.settings_file)
+        values[key] = bool(on)
+        problem = check_settings(values, self.settings_file)
+        if problem:
+            self.journal.appendHtml('<span style="color:%s;">%s</span>'
+                                    % (tokens.color("error"), html.escape(T("settings.error", text=problem))))
+            return
+        write_global_settings(self.settings_file, values)
+        self._refresh_states()
+
     # ================================================================== окна
     def _open_settings(self) -> None:
         SettingsDialog(self.settings_file, self, store=self.store).exec()
+        # опции главного окна — те же настройки: вдруг их сменили не здесь (файл, QTS)
+        values = read_global_settings(self.settings_file)
+        for box, key, default in ((self.binarize, "binarize_models", True), (self.rapify, "rapify", True),
+                                  (self.force, "ignore_errors", False)):
+            box.blockSignals(True)
+            box.setChecked(bool(values.get(key, default)))
+            box.blockSignals(False)
         self._refresh_states()
 
     def _on_theme_changed(self, *_args) -> None:
