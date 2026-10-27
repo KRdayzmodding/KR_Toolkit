@@ -18,7 +18,7 @@ def setup_theme(app, theme: str = "dark") -> None:
     from qfluentwidgets import setThemeColor
 
     from dialogs import apply_theme
-    from qts_ui import fasticons, nowheel, tokens
+    from qts_ui import fasticons, nowheel, theme_sync, tokens
 
     apply_theme(theme)
     setThemeColor(tokens.ACCENT)
@@ -26,6 +26,8 @@ def setup_theme(app, theme: str = "dark") -> None:
     fasticons.install()
     # колесо листает, а не правит числа под курсором
     nowheel.install(app)
+    # тема — за общим выбором: сменили в DevToolkit — окно перекрашивается сразу
+    theme_sync.follow(app)
 
 
 def main() -> int:

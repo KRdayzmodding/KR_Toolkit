@@ -8,4 +8,4 @@ PATCH — исправление. Меняется руками при выпу�
 version.json рядом с exe, и [KR] Dev Toolkit показывает её на карточке.
 """
 NAME = "Texture Editor"
-VERSION = "0.1.1"
+VERSION = "0.1.2"

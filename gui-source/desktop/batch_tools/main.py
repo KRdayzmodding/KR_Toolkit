@@ -28,7 +28,7 @@ def setup_theme(app, theme: str = "dark") -> None:
     """Тема как в KR QTS и [KR] Project Builder: выбранная, акцент DayZ, быстрые значки."""
     from qfluentwidgets import Theme, setTheme, setThemeColor
 
-    from qts_ui import fasticons, nowheel, tokens
+    from qts_ui import fasticons, nowheel, theme_sync, tokens
 
     setTheme({"auto": Theme.AUTO, "light": Theme.LIGHT, "dark": Theme.DARK}[theme])
     setThemeColor(tokens.ACCENT)
@@ -36,6 +36,8 @@ def setup_theme(app, theme: str = "dark") -> None:
     fasticons.install()
     # колесо листает, а не правит значения под курсором
     nowheel.install(app)
+    # тема — за общим выбором: сменили в DevToolkit — окно перекрашивается сразу
+    theme_sync.follow(app)
 
 
 def main(cli: str, paths: Optional[List[str]] = None) -> int:

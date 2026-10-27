@@ -9,4 +9,4 @@
 [KR] Imageset Editor показывает её на карточке.
 """
 NAME = "Imageset Editor"
-VERSION = "0.1.2"
+VERSION = "0.1.3"

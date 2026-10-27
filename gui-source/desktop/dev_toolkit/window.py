@@ -24,6 +24,7 @@ from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QSizePolicy, QStackedWid
 from qfluentwidgets import (BodyLabel, CaptionLabel, CardWidget, FluentIcon, IconWidget, LineEdit,
                             SegmentedWidget, StrongBodyLabel, SwitchButton)
 
+import kr_state
 from menu import MenuCall
 from qts_ui import updates_ui
 from versions_page import VersionsPage
@@ -31,7 +32,7 @@ from qts_ui import tokens
 from qts_ui.rows import shrink
 from qts_ui.frame import ToolWindow
 from texts import T
-from qfluentwidgets import themeColor
+from qfluentwidgets import qconfig, themeColor
 from tools import BATCH, EDIT, TOOLS, Tool, dist_root, exe_path, launch, read_version
 
 MIN = (520, 780)            # минимальный размер — он же размер первого запуска: карточки целиком
@@ -51,6 +52,10 @@ GROUPS = ((EDIT, "group.edit"), (BATCH, "group.batch"))
 SHELL_TEXTS = {"pbo": ("shell.pbo", "shell.pbo.desc"),
                "p3d": ("shell.p3d", "shell.p3d.desc"),
                "bin": ("shell.bin", "shell.bin.desc")}
+#: тулзы в «Открыть с помощью» (заказ юзера 27.10.2026) — одним переключателем: какая
+#: тулза станет программой по умолчанию, человек выбирает в самом «Открыть с помощью»
+OPEN_TEXTS = {"open": ("shell.open", "shell.open.desc")}
+THEME_TEXTS = {"auto": "theme.auto", "light": "theme.light", "dark": "theme.dark"}
 #: как работают пункты, пока человек не выбрал своё (те же, что у DevToolkit.exe)
 SHELL_DEFAULTS = {"delete_source": False, "suffix": "_mlod", "layout": "prefix"}
 
@@ -76,6 +81,8 @@ class LauncherWindow(ToolWindow):
         self._build()
         self.refresh()
         self._refresh_shell(announce=True)
+        # тему сменили в другой тулзе — окно перекрасит слежение, а выбор на сегменте — здесь
+        qconfig.themeChanged.connect(self._sync_theme)
 
     def _state(self) -> dict:
         try:
@@ -179,14 +186,25 @@ class LauncherWindow(ToolWindow):
         lay = QVBoxLayout(page)
         lay.setContentsMargins(0, tokens.SPACE_XS, 0, 0)
         lay.setSpacing(tokens.SPACE_S)
+        # тема одна на все тулзы, открытые окна подхватывают её сразу (решение юзера 27.10.2026)
+        look = QGridLayout()
+        look.setHorizontalSpacing(tokens.SPACE_S)
+        look.setColumnStretch(0, 1)
+        self.shell_switches: Dict[str, SwitchButton] = {}
+        self.shell_descs: Dict[str, CaptionLabel] = {}
+        self.theme_seg = SegmentedWidget(page)
+        for name, text in THEME_TEXTS.items():
+            self.theme_seg.addItem(name, T(text), lambda *_, n=name: self._set_theme(n))
+        self.theme_seg.setCurrentItem(kr_state.theme_name())
+        self.theme_seg.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self._setting(look, 0, page, T("theme"), T("theme.desc"), "theme", self.theme_seg)
+        lay.addLayout(look)
         lay.addWidget(StrongBodyLabel(T("shell.head"), page))
         grid = QGridLayout()
         grid.setHorizontalSpacing(tokens.SPACE_S)
         grid.setVerticalSpacing(tokens.SPACE_XXS)
         grid.setColumnStretch(0, 1)
         # переключатель — состояние системы: пункт есть в меню или нет (п. 15)
-        self.shell_switches: Dict[str, SwitchButton] = {}
-        self.shell_descs: Dict[str, CaptionLabel] = {}
         for row, (key, (title, desc)) in enumerate(SHELL_TEXTS.items()):
             switch = self._switch(page)
             switch.setEnabled(False)                         # до ответа DevToolkit.exe состояние неизвестно
@@ -194,6 +212,20 @@ class LauncherWindow(ToolWindow):
             self._setting(grid, row, page, T(title), T(desc), key, switch)
             self.shell_switches[key] = switch
         lay.addLayout(grid)
+
+        lay.addSpacing(tokens.SPACE_XS)
+        lay.addWidget(StrongBodyLabel(T("open.head"), page))
+        opens = QGridLayout()
+        opens.setHorizontalSpacing(tokens.SPACE_S)
+        opens.setVerticalSpacing(tokens.SPACE_XXS)
+        opens.setColumnStretch(0, 1)
+        for row, (key, (title, desc)) in enumerate(OPEN_TEXTS.items()):
+            switch = self._switch(page)
+            switch.setEnabled(False)
+            switch.checkedChanged.connect(lambda on, k=key: self._toggle_entry(k, bool(on)))
+            self._setting(opens, row, page, T(title), T(desc), key, switch)
+            self.shell_switches[key] = switch
+        lay.addLayout(opens)
 
         lay.addSpacing(tokens.SPACE_XS)
         lay.addWidget(StrongBodyLabel(T("shell.how"), page))
@@ -232,7 +264,7 @@ class LauncherWindow(ToolWindow):
         grid.setRowMinimumHeight(row + 2, tokens.SPACE_XS)        # воздух до следующей настройки
         grid.addWidget(BodyLabel(title, parent), row, 0)
         label = shrink(CaptionLabel(desc, parent))
-        label.setTextColor(tokens.color("text_dim"), tokens.color("text_dim"))
+        label.setTextColor(*tokens.pair("text_dim"))
         label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         grid.addWidget(label, row + 1, 0)
         grid.addWidget(control, row, 1, 2, 1, Qt.AlignRight | Qt.AlignVCenter)
@@ -267,14 +299,14 @@ class LauncherWindow(ToolWindow):
         if st and st.get("installed"):
             card.title_label.setText(st.get("title") or T(TITLES[tool.key][0]))
             if st.get("warn"):
-                text, color = T("version.outdated") % st["installed"], tokens.color("warning")
+                text, colors = T("version.outdated") % st["installed"], tokens.pair("warning")
             elif st.get("newer"):
-                text, color = T("version.newer") % (st["installed"], st["latest"]), tokens.ACCENT
+                text, colors = T("version.newer") % (st["installed"], st["latest"]), (tokens.ACCENT,) * 2
             else:
-                text, color = st["installed"], tokens.color("text_dim")
+                text, colors = st["installed"], tokens.pair("text_dim")
             card.version_label.setText(text)
             card.version_label.setToolTip("")
-            card.version_label.setTextColor(color, color)
+            card.version_label.setTextColor(*colors)
             return
         info = read_version(tool, self.root)
         card.title_label.setText((info or {}).get("name") or T(TITLES[tool.key][0]))
@@ -285,7 +317,7 @@ class LauncherWindow(ToolWindow):
         else:
             card.version_label.setText(T("version.none") if exe_path(tool, self.root).is_file() else "")
             card.version_label.setToolTip(T("version.none.tip"))
-        card.version_label.setTextColor(tokens.color("text_dim"), tokens.color("text_dim"))
+        card.version_label.setTextColor(*tokens.pair("text_dim"))
 
     def _open(self, tool: Tool) -> None:
         card = self.rows[tool.key]
@@ -302,7 +334,7 @@ class LauncherWindow(ToolWindow):
 
     def _say(self, text: str, role: str) -> None:
         self.status.setText(text)
-        self.status.setTextColor(tokens.color(role), tokens.color(role))
+        self.status.setTextColor(*tokens.pair(role))
         self.status.setVisible(bool(text))
 
     # ================================================================== меню проводника
@@ -351,7 +383,7 @@ class LauncherWindow(ToolWindow):
                 # нет программы в поставке — включить нельзя, причина видна (п. 53)
                 switch.setEnabled(not missing or switch.isChecked())
                 self.shell_descs[key].setText(
-                    T("shell.missing", path=ev.get("cli", "")) if missing else T(SHELL_TEXTS[key][1]))
+                    T("shell.missing", path=ev.get("cli", "")) if missing else T({**SHELL_TEXTS, **OPEN_TEXTS}[key][1]))
             elif kind == "refreshed" and announce:
                 # решение за человека — вслух (принцип 13): поставку перенесли, пункты вели в никуда
                 self._say(T("shell.refreshed", path=self.root,
@@ -359,6 +391,20 @@ class LauncherWindow(ToolWindow):
             elif kind == "problem":
                 self._say(T("shell.failed", text=ev.get("text", "")), "error")
         self._next_menu_call()
+
+    def _sync_theme(self, *_args) -> None:
+        name = kr_state.theme_name()
+        if self.theme_seg.currentRouteKey() != name:
+            self.theme_seg.blockSignals(True)
+            self.theme_seg.setCurrentItem(name)
+            self.theme_seg.blockSignals(False)
+
+    def _set_theme(self, name: str) -> None:
+        """Сразу у себя и в общий выбор — остальные окна перекрасятся по нему сами."""
+        from qfluentwidgets import setTheme
+        from qts_ui.theme_sync import theme_of
+        kr_state.set_theme(name)
+        setTheme(theme_of(name))
 
     def _toggle_entry(self, key: str, on: bool) -> None:
         self._menu("on" if on else "off", (key,))

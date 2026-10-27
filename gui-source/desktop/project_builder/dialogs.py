@@ -37,10 +37,11 @@ from texts import T
 THEMES = ("auto", "light", "dark")
 
 
-def theme_name(store) -> str:
-    """Тема окон всех тулз. По умолчанию тёмная (правило юзера 23.10.2026 для всех тулз)."""
-    name = store.window.get("theme", "dark") if store is not None else "dark"
-    return name if name in THEMES else "dark"
+def theme_name(store=None) -> str:
+    """Тема окон всех тулз — общий выбор (kr_state, решение юзера 27.10.2026): та же, что
+    на странице «Настройки» DevToolkit. По умолчанию тёмная (правило юзера 23.10.2026)."""
+    import kr_state
+    return kr_state.theme_name()
 
 
 def apply_theme(name: str) -> None:
@@ -392,8 +393,8 @@ class SettingsDialog(ThemedDialog):
         self._refresh_kinds(levels)
 
     def _set_theme(self, name: str) -> None:
-        self.store.window["theme"] = name
-        self.store.save()
+        import kr_state
+        kr_state.set_theme(name)                    # общий выбор: подхватят и другие тулзы
         apply_theme(name)
 
     def _pick_temp(self) -> None:

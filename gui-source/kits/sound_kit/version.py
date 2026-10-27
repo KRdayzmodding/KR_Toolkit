@@ -9,4 +9,4 @@
 [KR] Dev Toolkit показывает её на карточке.
 """
 NAME = "Sound Converter"
-VERSION = "0.1.2"
+VERSION = "0.1.3"

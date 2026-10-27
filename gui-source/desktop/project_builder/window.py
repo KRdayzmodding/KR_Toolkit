@@ -25,7 +25,7 @@ from typing import Dict, List, Optional
 from PySide6.QtCore import QEvent, Qt, QTimer
 from PySide6.QtGui import QColor, QKeySequence, QShortcut
 from PySide6.QtWidgets import (
-    QAbstractItemView, QFileDialog, QGridLayout, QHBoxLayout, QHeaderView, QStackedWidget,
+    QAbstractItemView, QFileDialog, QGridLayout, QHBoxLayout, QStackedWidget,
     QTableWidgetItem, QVBoxLayout, QWidget)
 from qfluentwidgets import (
     Action, BodyLabel, CaptionLabel, CheckBox, ComboBox, FluentIcon, LineEdit, MessageBox,
@@ -35,6 +35,7 @@ from qfluentwidgets import (
 from dialogs import LogsDialog, NameDialog, SettingsDialog
 from links import LinkedPackingLog, LinkText, act_link, finding_html
 from qts_ui import tokens
+from qts_ui.columns import ProportionalColumns
 from qts_ui.packing_log import FAIL, OK, PACKING
 from qts_ui.resizer import Resizer
 from qts_ui.rows import shrink
@@ -44,8 +45,9 @@ from texts import T
 from worker import BuildWorker, Result, check_settings, settings_path
 
 COL_PBO, COL_WHERE, COL_STATE = range(3)
-#: начальная ширина колонки «Куда»: «по умолчанию» целиком, путь — с многоточием
-WHERE_W = 120
+#: доли ширины колонок по умолчанию (юзер 27.10.2026): имя PBO короткое, а в «Куда» —
+#: путь, ему и место; «Состояние» — «запакован с ошибками: 3, в 17:05» целиком
+COLUMN_SHARES = (0.25, 0.45, 0.30)
 MIN = (520, 560)            # минимальный размер — он же размер первого запуска; +40 — своя шапка окна
 LIST_H = 232                # высота списка по умолчанию: шапка и пять строк
 LIST_MIN = 110
@@ -195,14 +197,15 @@ class MainWindow(ToolWindow):
         self.table.setTextElideMode(Qt.ElideMiddle)
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        hdr = self.table.horizontalHeader()
-        hdr.setSectionResizeMode(COL_PBO, QHeaderView.Stretch)
-        # своя папка строки — видна и жмётся (решение юзера 22.10.2026). Ширина своя,
-        # а не «растянуть»: в узком окне имя PBO важнее пути; длинный путь ужимается
-        # посередине, полный — в подсказке, колонку можно раздвинуть мышью
-        hdr.setSectionResizeMode(COL_WHERE, QHeaderView.Interactive)
-        self.table.setColumnWidth(COL_WHERE, WHERE_W)
-        hdr.setSectionResizeMode(COL_STATE, QHeaderView.ResizeToContents)
+        # колонки тянутся мышью, с окном меняются пропорционально, выставленное помнится
+        # (юзер 27.10.2026; прежнее «имя PBO важнее пути» от 22.10.2026 снято). Длинный путь
+        # ужимается посередине, полный — в подсказке
+        self.columns = ProportionalColumns(self.table, COLUMN_SHARES, self.store.window.get("columns"))
+        self.columns.changed.connect(self._remember_columns)
+        self._columns_save = QTimer(self)
+        self._columns_save.setSingleShot(True)
+        self._columns_save.setInterval(500)
+        self._columns_save.timeout.connect(self.store.save)
         self.table.setContextMenuPolicy(Qt.CustomContextMenu)
         self.table.customContextMenuRequested.connect(self._row_menu)
         self.table.itemChanged.connect(self._on_item_changed)
@@ -543,6 +546,11 @@ class MainWindow(ToolWindow):
         super().showEvent(event)
         # сохранённая высота могла быть от окна побольше
         QTimer.singleShot(0, self._fit_list)
+
+    def _remember_columns(self, shares: list) -> None:
+        """Доли — в окно сразу, на диск — когда человек отпустил границу (пока тянет, их десятки)."""
+        self.store.window["columns"] = [round(v, 4) for v in shares]
+        self._columns_save.start()
 
     def _remember_list_height(self, height: int) -> None:
         self.store.window["list_h"] = height

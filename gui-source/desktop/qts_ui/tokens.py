@@ -22,7 +22,7 @@
 """
 from __future__ import annotations
 
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QColor, QFont
 from qfluentwidgets import isDarkTheme, qconfig
 
 # --------------------------------------------------------------------- цвет
@@ -111,6 +111,13 @@ def color(role: str) -> str:
     чтобы опечатка не превратила строку в невидимую."""
     table = _DARK if isDarkTheme() else _LIGHT
     return table.get(role, table["text"])
+
+
+def pair(role: str) -> tuple[QColor, QColor]:
+    """Цвет роли в светлой и тёмной теме — для setTextColor(светлый, тёмный) у подписей
+    библиотеки: такая подпись перекрашивается при смене темы сама, а один цвет
+    текущей темы так и остался бы от той, что была при сборке окна."""
+    return (QColor(_LIGHT.get(role, _LIGHT["text"])), QColor(_DARK.get(role, _DARK["text"])))
 
 
 def tint(role: str, alpha: float = 0.16) -> str:

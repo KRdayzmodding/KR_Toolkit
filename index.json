@@ -36,6 +36,17 @@
      ],
      "manifest": "manifests/DevToolkit/0.1.2.json",
      "sha256": "d9c89bad444bee61dd2e0c5bf5a6694bbb5ae6deab9fa9891da4103b3ac0c796"
+    },
+    {
+     "version": "0.1.3",
+     "channel": "main",
+     "date": "2026-10-28",
+     "changes": [
+      "На вкладке «Настройки» — тема оформления для всех тулз сразу: системная, светлая или тёмная. Открытые окна перекрашиваются сразу.",
+      "Переключатель «Тулзы в «Открыть с помощью»»: PBO, P3D, BIN, ANM и TXA обрабатываются консольными тулзами сразу, PAA и imageset открываются в редакторе. Программу по умолчанию тулкит не меняет — только добавляет себя в список."
+     ],
+     "manifest": "manifests/DevToolkit/0.1.3.json",
+     "sha256": "3cede5c2c976431ba1e63a251a3ef800b312e8453cc7b10fb89d1ebcf17f08eb"
     }
    ],
    "title": "[KR] Dev Toolkit"
@@ -111,6 +122,20 @@
      ],
      "manifest": "manifests/ProjectBuilder/0.1.5.json",
      "sha256": "740d81bd4ce35d65058cf93e73c6926bf260de6e9f7599813d93b40bca0eb146"
+    },
+    {
+     "version": "0.1.6",
+     "channel": "main",
+     "date": "2026-10-28",
+     "changes": [
+      "Список PBO: ширину колонок можно менять мышью, при изменении окна колонки растягиваются пропорционально, выставленная ширина помнится. По умолчанию шире всех «Куда».",
+      "Новая проверка «Флаг альфы не как у ванили» для готовых .paa: с нестандартным флагом Mikero отказывается паковать. По умолчанию флаг приводится к ванильному только в PBO, исходник не меняется; в настройках исправлений можно выбрать «В PBO и в исходнике» или выключить исправление — тогда будет предупреждение.",
+      "texHeaders.bin: прозрачность текстуры берётся из её флага так же, как у бинаризатора Bohemia.",
+      "«Игнорировать ошибки» — игнорирование ошибок, кроме самых критичных. Файл, который не положил бы и Addon Builder (битая модель, битый .rvmat), в PBO не попадает.",
+      "Тема окна — общая с DevToolkit (вкладка «Настройки»): поменяли там — открытое окно перекрашивается сразу."
+     ],
+     "manifest": "manifests/ProjectBuilder/0.1.6.json",
+     "sha256": "8c3d16e2770ac56b1bc26163134b94ffa128410bc6101580c75fb087c74d96cf"
     }
    ],
    "title": "Project Builder"
@@ -159,6 +184,16 @@
      ],
      "manifest": "manifests/AddonSigner/0.1.3.json",
      "sha256": "aa0fdf5be27f8be3b4de7aa8038076ec071437c0968f4f427478f72bcf93adf5"
+    },
+    {
+     "version": "0.1.4",
+     "channel": "main",
+     "date": "2026-10-28",
+     "changes": [
+      "Тема окна — общая с DevToolkit (вкладка «Настройки»): поменяли там — открытое окно перекрашивается сразу."
+     ],
+     "manifest": "manifests/AddonSigner/0.1.4.json",
+     "sha256": "f1796f34944b8e3542324dff300b82e3cae71dbb749fadf223d1ff5b35781a8f"
     }
    ],
    "title": "Addon Signer"
@@ -195,6 +230,16 @@
      ],
      "manifest": "manifests/SoundConverter/0.1.2.json",
      "sha256": "a5de3ce799fa09b61add7df98fca2892bc1b0ce5c9a55bbedfe52b537e9256fe"
+    },
+    {
+     "version": "0.1.3",
+     "channel": "main",
+     "date": "2026-10-28",
+     "changes": [
+      "Тема окна — общая с DevToolkit (вкладка «Настройки»): поменяли там — открытое окно перекрашивается сразу."
+     ],
+     "manifest": "manifests/SoundConverter/0.1.3.json",
+     "sha256": "e17883afc16328f2c4cc60b60a86d55487632356b2a203b5393db42ebc2a7045"
     }
    ],
    "title": "Sound Converter"
@@ -233,6 +278,17 @@
      ],
      "manifest": "manifests/ImagesetEditor/0.1.2.json",
      "sha256": "145644a85fe6e9dc8c21817203b6b9cee7bea54ec15a8bfd07959da7890691a7"
+    },
+    {
+     "version": "0.1.3",
+     "channel": "main",
+     "date": "2026-10-28",
+     "changes": [
+      "Файлы .imageset можно открыть в тулзе через «Открыть с помощью» или перетащить на её значок (пункт включается в DevToolkit, вкладка «Настройки»).",
+      "Тема окна — общая с DevToolkit (вкладка «Настройки»): поменяли там — открытое окно перекрашивается сразу."
+     ],
+     "manifest": "manifests/ImagesetEditor/0.1.3.json",
+     "sha256": "098b8f4c77afee058048a6b5adc7bfc79d316f2ac9b4a21d3e462e4f6f096629"
     }
    ],
    "title": "Imageset Editor"
@@ -259,6 +315,17 @@
      ],
      "manifest": "manifests/TextureEditor/0.1.1.json",
      "sha256": "14e400eefaf24b80970ad3b2660817e5bbf5c34248f8227aca195be2c7a8789a"
+    },
+    {
+     "version": "0.1.2",
+     "channel": "main",
+     "date": "2026-10-28",
+     "changes": [
+      "Файлы .paa можно открыть в тулзе через «Открыть с помощью» или перетащить на её значок (пункт включается в DevToolkit, вкладка «Настройки»).",
+      "Тема окна — общая с DevToolkit (вкладка «Настройки»): поменяли там — открытое окно перекрашивается сразу."
+     ],
+     "manifest": "manifests/TextureEditor/0.1.2.json",
+     "sha256": "b20d65773c7d39c9d4fc34880379928b2beef9a91f566e0af3d2d5550f0326cb"
     }
    ],
    "title": "Texture Editor"
@@ -285,6 +352,17 @@
      ],
      "manifest": "manifests/TextureConverter/0.1.1.json",
      "sha256": "a9652a324927afdd027c98fdd1f82ae9a615bf15a0da4ddfd6062532dfa7d55f"
+    },
+    {
+     "version": "0.1.2",
+     "channel": "main",
+     "date": "2026-10-28",
+     "changes": [
+      "Файл можно перетащить на TextureConverter.exe или открыть им через «Открыть с помощью» — он обработается сразу, с настройками со страницы «Настройки» DevToolkit. Если всё прошло без ошибок, окно консоли закроется само, при ошибке — ждёт Enter.",
+      "Тема окна — общая с DevToolkit (вкладка «Настройки»): поменяли там — открытое окно перекрашивается сразу."
+     ],
+     "manifest": "manifests/TextureConverter/0.1.2.json",
+     "sha256": "29dd6f9ca0ecb5123472e1db1c05e7f03edf1e34fa187dfdfd4f8df2a2b87341"
     }
    ],
    "title": "Texture Converter"
@@ -311,6 +389,17 @@
      ],
      "manifest": "manifests/ModelConverter/0.1.1.json",
      "sha256": "e56cf947db1d963b0d9c0ba4c4a4830dfb47bbf2999744fa723aa0af80db7910"
+    },
+    {
+     "version": "0.1.2",
+     "channel": "main",
+     "date": "2026-10-28",
+     "changes": [
+      "Файл можно перетащить на ModelConverter.exe или открыть им через «Открыть с помощью» — он обработается сразу, с настройками со страницы «Настройки» DevToolkit. Если всё прошло без ошибок, окно консоли закроется само, при ошибке — ждёт Enter.",
+      "Тема окна — общая с DevToolkit (вкладка «Настройки»): поменяли там — открытое окно перекрашивается сразу."
+     ],
+     "manifest": "manifests/ModelConverter/0.1.2.json",
+     "sha256": "cf412d288989e0cf540c14ee1047ced6a821a0aeb73d8ead35f35e1cb41006a6"
     }
    ],
    "title": "Model Converter"
@@ -347,6 +436,17 @@
      ],
      "manifest": "manifests/DeBinarizer/0.1.2.json",
      "sha256": "3b6cb926715cce50decef697365dc033f4e54f58aebcea2243369092fa9da6b9"
+    },
+    {
+     "version": "0.1.3",
+     "channel": "main",
+     "date": "2026-10-28",
+     "changes": [
+      "Файл можно перетащить на DeBinarizer.exe или открыть им через «Открыть с помощью» — он обработается сразу, с настройками со страницы «Настройки» DevToolkit. Если всё прошло без ошибок, окно консоли закроется само, при ошибке — ждёт Enter.",
+      "Тема окна — общая с DevToolkit (вкладка «Настройки»): поменяли там — открытое окно перекрашивается сразу."
+     ],
+     "manifest": "manifests/DeBinarizer/0.1.3.json",
+     "sha256": "63dbc079465805196ba3bb36821d27a848e4e3cd9ce5620a72f1b0a48d6e907d"
     }
    ],
    "title": "DeBinarizer"
@@ -384,6 +484,17 @@
      ],
      "manifest": "manifests/PboUnpacker/0.1.2.json",
      "sha256": "0f47ed8a824bc9bae26516f3405a0217f7e5ba5648bcb87036f58b79f6ba0419"
+    },
+    {
+     "version": "0.1.3",
+     "channel": "main",
+     "date": "2026-10-28",
+     "changes": [
+      "Файл можно перетащить на PboUnpacker.exe или открыть им через «Открыть с помощью» — он обработается сразу, с настройками со страницы «Настройки» DevToolkit. Если всё прошло без ошибок, окно консоли закроется само, при ошибке — ждёт Enter.",
+      "Тема окна — общая с DevToolkit (вкладка «Настройки»): поменяли там — открытое окно перекрашивается сразу."
+     ],
+     "manifest": "manifests/PboUnpacker/0.1.3.json",
+     "sha256": "137dfbeb0d5e417ba20e310fe5954463f6d6d1b918523df0d971a9bd62dffd5f"
     }
    ],
    "title": "PBO Unpacker"
@@ -410,10 +521,21 @@
      ],
      "manifest": "manifests/AnmConverter/0.1.1.json",
      "sha256": "f5e92e4dbabe8833f08d27393646d75e69244327da107370b42bd6d7912f4875"
+    },
+    {
+     "version": "0.1.2",
+     "channel": "main",
+     "date": "2026-10-28",
+     "changes": [
+      "Файл можно перетащить на AnmConverter.exe или открыть им через «Открыть с помощью» — он обработается сразу, с настройками со страницы «Настройки» DevToolkit. Если всё прошло без ошибок, окно консоли закроется само, при ошибке — ждёт Enter.",
+      "Тема окна — общая с DevToolkit (вкладка «Настройки»): поменяли там — открытое окно перекрашивается сразу."
+     ],
+     "manifest": "manifests/AnmConverter/0.1.2.json",
+     "sha256": "d274f398a8ba916e33c002e938f9532c24eb9fedd8a6036f356e86813d10c953"
     }
    ],
    "title": "ANM Converter"
   }
  },
- "published": "2026-10-27T10:55:37Z"
+ "published": "2026-10-27T21:53:01Z"
 }
