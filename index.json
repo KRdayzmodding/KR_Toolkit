@@ -146,6 +146,17 @@
      ],
      "manifest": "manifests/ProjectBuilder/0.1.7.json",
      "sha256": "2bcae58e37d9d64f0c3c5311937e98e44ffd9150b1aec794593c88398adac2c5"
+    },
+    {
+     "version": "0.1.8",
+     "channel": "main",
+     "date": "2026-10-28",
+     "changes": [
+      "Смена темы на лету (в том числе из DevToolkit) перекрашивает колонку «Куда», журнал и открытое окно логов. Раньше в светлой теме они оставались в цветах тёмной и почти не читались.",
+      "Тулза больше не падает при закрытии."
+     ],
+     "manifest": "manifests/ProjectBuilder/0.1.8.json",
+     "sha256": "19aa97beb64100fb26bfde9348b2392ffc3d6348d2da6848fb62e40ea15321a6"
     }
    ],
    "title": "Project Builder"
@@ -547,5 +558,5 @@
    "title": "ANM Converter"
   }
  },
- "published": "2026-10-27T22:50:27Z"
+ "published": "2026-10-28T01:08:21Z"
 }

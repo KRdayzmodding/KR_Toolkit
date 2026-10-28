@@ -34,7 +34,7 @@ from qfluentwidgets import (
 
 from dialogs import LogsDialog, NameDialog, SettingsDialog
 from links import LinkedPackingLog, LinkText, act_link, finding_html
-from qts_ui import tokens
+from qts_ui import recolor, tokens
 from qts_ui.columns import ProportionalColumns
 from qts_ui.packing_log import FAIL, OK, PACKING
 from qts_ui.resizer import Resizer
@@ -947,7 +947,10 @@ class MainWindow(ToolWindow):
         """Свои цвета, выданные при сборке, перекрасить под новую тему (п. 37)."""
         self._style_drop_zone()
         for row in range(self.table.rowCount()):
+            self._paint_where(row)
             self._paint_state(row)
+        # тема меняется и из DevToolkit: без этого в светлой журнал оставался тёмным (1,2–1,8:1)
+        recolor.retint(self.journal.document())
 
     def _style_drop_zone(self) -> None:
         self.empty_zone.setStyleSheet("#dropZone{border:1px dashed %s;border-radius:%dpx;}"

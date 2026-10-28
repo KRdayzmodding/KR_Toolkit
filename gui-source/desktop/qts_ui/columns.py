@@ -51,11 +51,14 @@ class ProportionalColumns(QObject):
             self.header.setSectionResizeMode(index, QHeaderView.Interactive)
         self._applying = False
         self.header.sectionResized.connect(self._on_resized)
-        table.viewport().installEventFilter(self)
+        # viewport запомнить: спрашивать его у таблицы в фильтре нельзя — при выходе
+        # таблица уже наполовину разрушена, и процесс падал (0xC0000005, PB 0.1.6–0.1.7)
+        self._viewport = table.viewport()
+        self._viewport.installEventFilter(self)
         self.apply()
 
     def eventFilter(self, obj, event):            # имя метода задаёт Qt
-        if obj is self.table.viewport() and event.type() == QEvent.Resize:
+        if event.type() == QEvent.Resize and obj is self._viewport:
             self.apply()
         return False
 
@@ -64,7 +67,7 @@ class ProportionalColumns(QObject):
 
     def apply(self) -> None:
         """Ширины по долям под текущую ширину таблицы; остаток округления — последней."""
-        total = self.table.viewport().width()
+        total = self._viewport.width()
         if total <= 0:
             return
         widths = [max(MIN_W, int(total * share)) for share in self.shares]

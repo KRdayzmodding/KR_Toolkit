@@ -9,4 +9,4 @@
 [KR] Dev Toolkit показывает её на карточке.
 """
 NAME = "Project Builder"
-VERSION = "0.1.7"
+VERSION = "0.1.8"

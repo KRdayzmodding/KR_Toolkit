@@ -25,7 +25,7 @@ from qfluentwidgets import (
 
 import worker as pb
 
-from qts_ui import tokens
+from qts_ui import recolor, tokens
 from qts_ui.rows import setting_row, shrink
 from qts_ui.theme import ThemedDialog
 from links import LinkText, LogSearch, act_link, finding_html
@@ -78,7 +78,7 @@ class NameDialog(MessageBoxBase):
         name = self.name()
         clash = name in self.taken
         self.hint.setText(T("set.name.taken", name=name) if clash else "")
-        self.hint.setTextColor(tokens.color("error"), tokens.color("error"))
+        self.hint.setTextColor(*tokens.pair("error"))
         self.yesButton.setEnabled(bool(name) and not clash)
 
 
@@ -219,7 +219,7 @@ class SettingsDialog(ThemedDialog):
         self._build_fixes(fixes_root, values.get("fixes") or {})
 
         self.error = shrink(CaptionLabel("", self))
-        self.error.setTextColor(tokens.color("error"), tokens.color("error"))
+        self.error.setTextColor(*tokens.pair("error"))
         outer.addWidget(self.error)
         bottom = QHBoxLayout()
         bottom.addStretch(1)
@@ -555,6 +555,10 @@ class LogsDialog(ThemedDialog):
         from PySide6.QtGui import QKeySequence, QShortcut
         QShortcut(QKeySequence.StandardKey.Find, self, activated=self.search.focus)
 
+        from qfluentwidgets import qconfig
+        qconfig.themeChanged.connect(self._on_theme_changed)
+        self.destroyed.connect(lambda *_: _disconnect_theme(self._on_theme_changed))
+
         if not items:
             self.summary.setText(T("logs.empty"))
             self.full.setEnabled(False)
@@ -569,6 +573,13 @@ class LogsDialog(ThemedDialog):
         chosen = [i for i, it in enumerate(items) if it["name"] == select]
         first_bad = next((i for i, it in enumerate(items) if _role(it) == "error"), 0)
         self.list.setCurrentRow(chosen[-1] if chosen else first_bad)
+
+    def _on_theme_changed(self, *_args) -> None:
+        """Окно открыто, а тема сменилась из DevToolkit: список и текст — под новую,
+        прокрутка и найденное остаются на месте."""
+        for row, item in enumerate(self.items):
+            self.list.item(row).setForeground(_qcolor(_role(item)))
+        recolor.retint(self.view.document())
 
     def _current(self) -> Optional[dict]:
         row = self.list.currentRow()
@@ -591,7 +602,7 @@ class LogsDialog(ThemedDialog):
                                    warnings=len(report.warnings)))
         else:
             self.summary.setText(T("logs.summary.ok", pbo=item["name"], warnings=len(report.warnings)))
-        self.summary.setTextColor(tokens.color(role), tokens.color(role))
+        self.summary.setTextColor(*tokens.pair(role))
         log = item.get("log")
         self.open_btn.setEnabled(bool(log) and Path(log).exists())
         if self.full.isChecked():
@@ -687,6 +698,15 @@ def _role(item: dict) -> str:
     if report is None or report.errors:
         return "error"
     return "warning" if report.warnings else "success"
+
+
+def _disconnect_theme(slot) -> None:
+    # на выходе qconfig уходит раньше окон — отписываться не от чего (как tokens.apply_console)
+    from qfluentwidgets import qconfig
+    try:
+        qconfig.themeChanged.disconnect(slot)
+    except (RuntimeError, TypeError):
+        pass
 
 
 def _qcolor(role: str):
